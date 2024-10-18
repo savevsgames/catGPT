@@ -1,0 +1,13 @@
+{
+  "name": "tomogatch.ai",
+  "version": "1.0.0",
+  "description": "TODO!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd client && npm i && cd ../server npm i"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
