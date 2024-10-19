@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "npm run build && node dist/server.js --ignore client"
+    "start": "npm run build && node dist/server.js --ignore client",
+    "seed": "node dist/seeds/index.js"
+    
   },
   "keywords": [],
   "author": "",
