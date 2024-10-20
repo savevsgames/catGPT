@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App.tsx';
 import '/src/index.css';
-import Welcome from './pages/welcome.tsx'
-import Signup from './pages/signup.tsx'
+import Landing from './pages/Landing.tsx'
+import Signup from './pages/Signup.tsx'
 
 const router = createBrowserRouter ([
   {
@@ -13,12 +13,16 @@ const router = createBrowserRouter ([
     children: [
       {
         index: true,
-        element: <Welcome />,
+        element: <Landing />,
       },
       {
         path: '/Signup',
         element: <Signup />,
       },
+      // {
+      //   path: '/Login',
+      //   element: <Login />,
+      // },
       // {
       //   path: '/Profile',
       //   element: <Profile />,
