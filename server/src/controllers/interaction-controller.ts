@@ -20,6 +20,7 @@ export const getAllInteractions = async (_req: Request, res: Response) => {
           attributes: ["name"],
         },
       ],
+      order: ["interactionDate", "Desc"],
     });
     res.status(200).json(interactions);
   } catch (error: any) {
