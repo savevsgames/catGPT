@@ -58,7 +58,7 @@ export const createUser = async (req: Request, res: Response) => {
       username,
       password,
       email,
-      userRole: "standard user", // Default role
+      userRole: "standard", // Default role
       bio,
       yarn: 200, // Default value
     });

@@ -69,7 +69,7 @@ export function UserFactory(sequelize: Sequelize) {
       },
       userRole: {
         type: DataTypes.STRING,
-        defaultValue: "standard user",
+        defaultValue: "standard",
         allowNull: false,
       },
       bio: {
