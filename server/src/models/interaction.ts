@@ -48,7 +48,7 @@ export function InteractionFactory(sequelize: Sequelize) {
     {
       sequelize,
       timestamps: false,
-      modelName: "interactions",
+      tableName: "interactions",
     }
   );
   return Interaction;

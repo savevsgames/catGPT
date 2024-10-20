@@ -8,7 +8,10 @@ import {
 } from "sequelize";
 import bcrypt from "bcrypt";
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
   declare id: CreationOptional<number>;
   declare username: string;
   declare password: string;
@@ -49,10 +52,11 @@ export function UserFactory(sequelize: Sequelize) {
           notNull: {
             msg: "Please enter a password",
           },
-          len: {
-            args: [8, 25],
-            msg: "Password must be at least 8 characters long",
-          },
+          // commenting this out for now, throwing errors on PUT requests
+          // len: {
+          //   args: [8, 25],
+          //   msg: "Password must be at least 8 characters long",
+          // },
         },
       },
       email: {
@@ -65,7 +69,7 @@ export function UserFactory(sequelize: Sequelize) {
       },
       userRole: {
         type: DataTypes.STRING,
-        defaultValue: "standard user",
+        defaultValue: "standard",
         allowNull: false,
       },
       bio: {
@@ -89,13 +93,15 @@ export function UserFactory(sequelize: Sequelize) {
         beforeUpdate: async (updatedUser: User) => {
           if (updatedUser.password) {
             await updatedUser.setPassword(updatedUser.password); // hash the new updated password
+          } else {
+            console.log("No updated password to hash");
           }
         },
       },
       sequelize,
       timestamps: true, // to enable timestamps of createdAt
       updatedAt: false, // but disable the updatedAt
-      modelName: "users",
+      tableName: "users",
     }
   );
   return User;

@@ -63,7 +63,7 @@ export function CatFactory(sequelize: Sequelize) {
       sequelize,
       timestamps: true,
       updatedAt: false,
-      modelName: "cats",
+      tableName: "cats",
     }
   );
   return Cat;

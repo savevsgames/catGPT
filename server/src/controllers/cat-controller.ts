@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { Cat } from "../models/cat.js";
-import { User } from "../models/user.js";
+import { Cat, User } from "../models/index.js";
 
 // GET /cats - get all cats and include the owner's username in the table
 export const getAllCats = async (_req: Request, res: Response) => {
@@ -15,6 +14,7 @@ export const getAllCats = async (_req: Request, res: Response) => {
       ],
     });
     res.status(200).json(cats);
+    console.log(cats);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

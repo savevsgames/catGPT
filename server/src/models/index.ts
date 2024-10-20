@@ -46,7 +46,7 @@ User.hasMany(Interaction, {
 // but each interaction is made by one user
 Interaction.belongsTo(User, {
   foreignKey: "userId",
-  as: "user",
+  as: "owner",
 });
 
 export { User, Cat, Interaction };
