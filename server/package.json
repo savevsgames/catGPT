@@ -7,13 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
     "start": "npm run build && node dist/server.js --ignore client",
-    "seed": "npm run build && node dist/seeds/index.js"
+    "seed": "node dist/seeds/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/core": "^0.3.13",
+    "@langchain/openai": "^0.3.11",
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.6",
     "bcrypt": "^5.1.1",
