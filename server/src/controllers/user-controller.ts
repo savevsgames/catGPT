@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../models/user.js";
+import { User } from "../models/index.js";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -7,6 +7,14 @@ export const getAllUsers = async (_req: Request, res: Response) => {
     const users = await User.findAll({
       attributes: { exclude: ["password"] },
     });
+
+    console.log("Users found:", users);
+
+    if (!users || users.length === 0) {
+      res.status(404).json({ message: "No users found" });
+      console.log("issue getting users");
+    }
+
     res.json(users);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -30,28 +38,55 @@ export const getUserById = async (req: Request, res: Response) => {
 // POST /users - create a new user
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const newUser = await User.create(req.body);
+    const { username, password, email, bio } = req.body;
+
+    // validate required fields
+    if (!username || !password || !email) {
+      res
+        .status(400)
+        .json({ message: "Username, password, and email are required." });
+    }
+
+    // check if the user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({ message: "Email is already in use." });
+    }
+
+    // Create a new user, with a default userRole
+    const newUser = await User.create({
+      username,
+      password,
+      email,
+      userRole: "standard user", // Default role
+      bio,
+      yarn: 200, // Default value
+    });
+
     res.status(201).json(newUser);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 // PUT /user/:id - update a user by id
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { username, password, email, userRole, bio } = req.body;
-    const user = await User.findByPk(req.params.id);
-    if (!user) {
+    const { username, password, email, bio } = req.body;
+    const updatedUser = await User.findByPk(req.params.id);
+    if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      user.username = username;
-      user.password = password; // password will be hashed beforeUpdate, this is defined in a hook
-      user.email = email;
-      user.userRole = userRole; // stil need to discuss with the team how this is going to be treated
-      user.bio = bio;
-      // yarn gets updated automatically, it's not something that the user updates. Therefore I am not updating the yarn property.
-      await user.save();
+      updatedUser.username = username;
+      updatedUser.password = password;
+      updatedUser.email = email;
+      updatedUser.bio = bio;
+      // yarn gets updated automatically, it's not something that the updatedUser updates. Therefore I am not updating the yarn property.
+      console.log("before save");
+      await updatedUser.save();
+      console.log("saved");
+      res.status(201).json(updatedUser);
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });

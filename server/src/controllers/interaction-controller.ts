@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { Interaction } from "../models/interaction.js";
-import { Cat } from "../models/cat.js";
-import { User } from "../models/user.js";
+import { Interaction, Cat, User } from "../models/index.js";
 
 // GET /interactions - get all types of interactions, include the cat's name, and the user that made that interaction
 
@@ -20,7 +18,7 @@ export const getAllInteractions = async (_req: Request, res: Response) => {
           attributes: ["name"],
         },
       ],
-      order: ["interactionDate", "Desc"],
+      order: ["interactionDate"],
     });
     res.status(200).json(interactions);
   } catch (error: any) {
@@ -58,11 +56,13 @@ export const getInteractionById = async (req: Request, res: Response) => {
 // POST /interactions - create/commit an interaction on a cat
 export const createInteraction = async (req: Request, res: Response) => {
   try {
-    const { interactionType, description } = req.body;
+    const { interactionType, description, userId, catId } = req.body;
     const interaction = await Interaction.create({
       interactionType,
       description,
       interactionDate: new Date(), // automatically sets the date. no user interaction needed for that
+      userId,
+      catId,
     });
     res.status(201).json(interaction);
   } catch (error: any) {
