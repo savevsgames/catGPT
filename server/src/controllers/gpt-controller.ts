@@ -1,23 +1,26 @@
 import { type Request, type Response } from "express";
-import { OpenAI } from "@langchain/openai";
-import { PromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { createPromptTemplate } from "../templates/customPromptTemplate.js";
 import dotenv from "dotenv";
+import {
+  GPTStructuredResponse,
+  UserChatRequest,
+  CatProfile,
+} from "../interfaces/gpt-interfaces";
+
+// import models for database operations so we can test the chat interactions - prolly change this to use sequelize endpoints
+// import { User } from "../models/user.js";
+import { Cat } from "../models/cat.js";
+import { Interaction } from "../models/interaction.js";
 
 dotenv.config();
 
-// Get the OpenAI API key from the environment variables
+// Initialize the OpenAI model
 const apiKey = process.env.OPENAI_API_KEY;
-let model: OpenAI;
+let model: ChatOpenAI;
 
-// 3.5-turbo is the model we have chosen for this project. It is
-// powerful enough, but also affordable, which helps us have a higher
-// token limit and more robust context than we could achieve with the
-// same cost as the most up to date madels.
-
-// Temperature is set to 0 to make the responses more predictable
 if (apiKey) {
-  // Initialize the OpenAI model if the API key is provided
-  model = new OpenAI({
+  model = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: apiKey,
     modelName: "gpt-3.5-turbo",
@@ -26,71 +29,203 @@ if (apiKey) {
   console.error("OPENAI_API_KEY is not configured.");
 }
 
-// Create a new prompt template for formatting prompts - this prompt template will be edited heavily in the future
-// for now, to test the API, we will use a simple template that just adds the user's latest chat to the prompt in order to make sure we have
-// the data we need to create the proper flow.
-const promptTemplate = new PromptTemplate({
-  template: `
-        You are a somewhat rude, talking pet/virtual cat. Respond like a talking cat to all queries. 
-        If a cat would not know the answer to a question, you should pretend not to know the answer as well. 
-        \n{userChat}
-    `,
-  inputVariables: ["userChat"],
-});
+// Function to fetch relevant data from the database - disabled until DB is seeded
+// async function fetchDataForPrompt(userId: number, catId: string) {
+//   try {
+//     const user = await User.findByPk(userId);
+//     const cat = await Cat.findByPk(catId);
+//     const recentInteractions = await Interaction.findAll({
+//       where: { catId },
+//       order: [["interactionDate", "DESC"]],
+//       limit: 5,
+//     });
 
-// Format the prompt using the prompt template with the user's chatInput
-const formatPrompt = async (userChat: string): Promise<string> => {
-  return await promptTemplate.format({ userChat });
-};
+//     if (!user || !cat) throw new Error("User or Cat not found.");
+//     return { user, cat, recentInteractions };
+//   } catch (error) {
+//     console.error("Error fetching data for prompt:", error);
+//     throw error;
+//   }
+// }
 
-// Call the OpenAI API to get a response to the formatted prompt
-const promptFunc = async (input: string) => {
+// Chat Template - Format the chat prompt with the user's input and cat's data
+// Create the prompt using the custom template
+async function formatChatPrompt(
+  userChat: string,
+  cat: CatProfile,
+  interactions: Interaction[]
+): Promise<string> {
+  const interactionHistory = interactions
+    .map(
+      (interaction) =>
+        `${
+          interaction.interactionType
+        } on ${interaction.interactionDate.toISOString()}`
+    )
+    .join(", ");
+
+  return createPromptTemplate({
+    catName: cat.name,
+    personality: cat.personality,
+    mood: cat.mood.toString(),
+    interactionHistory,
+    userChat,
+  });
+}
+
+// Call GPT and safely handle the response - cannot be a string, as it is a
+// structured AIMessage object, so we need to parse its content
+async function callGPT(prompt: string): Promise<GPTStructuredResponse> {
   try {
-    if (model) {
-      return await model.invoke(input);
-    }
-    return `No OpenAI API key provided. Unable to provide a response.`;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
+    const response = await model.invoke(prompt);
 
-// Handle the POST request to chat with the cat gpt -
-// We will create custom interfaces for the Request
-// and Response to make it more specific and allow us to
-// use structured data in the request and response objects
-// This will be done after testing connections to the API
+    // Safely extract the content if it exists
+    if (response && typeof response.content === "string") {
+      return JSON.parse(response.content); // Parse the string content into JSON
+    } else {
+      console.warn("Invalid response format from OpenAI:", response);
+      throw new Error("Unexpected response format.");
+    }
+  } catch (error) {
+    console.error("Error invoking the OpenAI API:", error);
+    throw new Error("Failed to get a valid response from the OpenAI API.");
+  }
+}
+
+// Function to save the interaction to the database
+// Creates a new Interaction record and updates the cat's mood if needed
+async function saveInteraction(
+  userId: number,
+  catId: string,
+  summary: string,
+  interactionType: "play" | "gift" | "feed",
+  newMood?: number
+) {
+  try {
+    // Create a new Interaction record
+    await Interaction.create({
+      userId,
+      catId,
+      interactionType,
+      description: summary,
+      interactionDate: new Date(),
+    });
+
+    // If new mood is included in the response, update the cat's mood
+    if (newMood !== undefined) {
+      await Cat.update({ mood: newMood }, { where: { id: catId } });
+    }
+  } catch (error) {
+    console.error("Error saving interaction:", error);
+    throw error;
+  }
+}
+
+// Main route handler to manage chat interactions
 export const chatWithCat = async (
-  req: Request,
+  req: Request<{}, {}, UserChatRequest>,
   res: Response
-): Promise<void> => {
-  const userInputData: string = req.body.userChat;
+) => {
+  // Extract the userChat, userId, and catId from the request body
+  const { userChat, userId, catId } = req.body;
 
   try {
-    if (!userInputData) {
-      res.status(400).json({
-        userChat: null,
-        response: "What did you say? ... Did you type something?",
-      });
-      return;
-    }
+    // Fetch the user, cat, and recent interactions from the database
+    // const { user, cat, recentInteractions } = await fetchDataForPrompt(
+    //   userId,
+    //   catId
+    // );
 
-    const formattedPrompt: string = await formatPrompt(userInputData);
-    const result: string = await promptFunc(formattedPrompt);
+    // TEMPOARY MOCK DATA - THE ABOVE FUNCTION WILL BE USED OR ADJUSTED TO USE SEQUELIZE ENDPOINTS INSTEAD
+    const { user, cat, recentInteractions } = {
+      user: {
+        id: 1,
+        username: "testuser",
+        password: "password123",
+        email: "testuser@example.com",
+        userRole: "standard",
+        bio: "This is a test user.",
+        yarn: 100,
+      },
+      cat: {
+        id: "1",
+        name: "Whiskers",
+        skin: "Tabby",
+        personality: "Playful",
+        mood: 5,
+        deathFlag: 0,
+        isAlive: true,
+        userId: 1,
+      },
+      recentInteractions: <Interaction[]>[
+        {
+          interactionType: "play",
+          interactionDate: new Date(),
+          description: "Test Description",
+          userId: 1,
+          catId: "1",
+        },
+        {
+          interactionType: "feed",
+          interactionDate: new Date(),
+          description: "Fed the cat some tuna",
+          userId: 1,
+          catId: "1",
+        },
+        {
+          interactionType: "gift",
+          interactionDate: new Date(),
+          description: "Gave the cat a new toy mouse",
+          userId: 1,
+          catId: "1",
+        },
+        {
+          interactionType: "play",
+          interactionDate: new Date(),
+          description: "Played with a laser pointer",
+          userId: 1,
+          catId: "1",
+        },
+        {
+          interactionType: "feed",
+          interactionDate: new Date(),
+          description: "Gave the cat some milk",
+          userId: 1,
+          catId: "1",
+        },
+      ],
+    };
+    console.log("user", user);
+    console.log("cat", cat);
+    console.log("recentInteractions", recentInteractions);
+
+    // Format the chat prompt with the user's input and cat's data
+    const formattedPrompt = await formatChatPrompt(
+      userChat,
+      cat,
+      recentInteractions
+    );
+    const gptResponse = await callGPT(formattedPrompt);
+
+    // Function to save the interaction to the database
+    await saveInteraction(
+      userId,
+      catId,
+      gptResponse.summary,
+      "play",
+      gptResponse.newMood
+    );
+
     res.json({
-      userChat: userInputData,
-      prompt: formattedPrompt,
-      response: result,
+      userChat,
+      conversation: gptResponse.conversation,
     });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error:", error.message);
-    }
-    res.status(500).json({
-      userChat: userInputData,
-      prompt: null,
-      response: "Internal Server Error",
-    });
+  } catch (error) {
+    console.error("Error in chatWithCat handler:", error);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error. Please try again later." });
   }
 };
+
+export default chatWithCat;
