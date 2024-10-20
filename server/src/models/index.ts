@@ -19,7 +19,7 @@ User.hasMany(Cat, {
 });
 // but a cat belongs to only one user
 Cat.belongsTo(User, {
-  foreignKey: "catId",
+  foreignKey: "userId",
   as: "owner",
 });
 
@@ -49,4 +49,4 @@ Interaction.belongsTo(User, {
   as: "user",
 });
 
-export default { User, Cat, Interaction };
+export { User, Cat, Interaction };

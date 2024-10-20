@@ -29,6 +29,7 @@ export function InteractionFactory(sequelize: Sequelize) {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
       },
       interactionType: {
         type: DataTypes.ENUM("play", "gift", "feed"),
