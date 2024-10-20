@@ -81,7 +81,13 @@ async function callGPT(prompt: string): Promise<GPTStructuredResponse> {
 
     // Safely extract the content if it exists
     if (response && typeof response.content === "string") {
-      return JSON.parse(response.content); // Parse the string content into JSON
+      // Clean up the response content
+      // Remove code block markers & Markdown code block markers
+      const cleanedContent = response.content
+        .replace(/```json|```/g, "")
+        .trim(); // Trim any extra spaces
+
+      return JSON.parse(cleanedContent); // Parse the string content into JSON
     } else {
       console.warn("Invalid response format from OpenAI:", response);
       throw new Error("Unexpected response format.");
@@ -94,6 +100,8 @@ async function callGPT(prompt: string): Promise<GPTStructuredResponse> {
 
 // Function to save the interaction to the database
 // Creates a new Interaction record and updates the cat's mood if needed
+const MOCK_DATA = true; // For testing only - once db is seeded, set to false / remove
+
 async function saveInteraction(
   userId: number,
   catId: string,
@@ -102,7 +110,19 @@ async function saveInteraction(
   newMood?: number
 ) {
   try {
-    // Create a new Interaction record
+    if (MOCK_DATA) {
+      console.log("Mock Mode: Skipping interaction saving.");
+      console.log({
+        userId,
+        catId,
+        summary,
+        interactionType,
+        newMood,
+      });
+      return; // Exit early in mock mode
+    }
+
+    // Create a new Interaction record in real mode
     await Interaction.create({
       userId,
       catId,
@@ -111,7 +131,7 @@ async function saveInteraction(
       interactionDate: new Date(),
     });
 
-    // If new mood is included in the response, update the cat's mood
+    // If new mood is included, update the cat's mood
     if (newMood !== undefined) {
       await Cat.update({ mood: newMood }, { where: { id: catId } });
     }
