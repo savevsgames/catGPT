@@ -13,7 +13,7 @@ export class Cat extends Model<
   InferAttributes<Cat>,
   InferCreationAttributes<Cat>
 > {
-  declare id: CreationOptional<string>; // uuid is stored as a string
+  declare id: CreationOptional<number>;
   declare name: string;
   declare skin: string;
   declare personality: string; // we are using this to narrow down the user's chatGPT prompts with the cat
@@ -28,10 +28,10 @@ export function CatFactory(sequelize: Sequelize) {
   Cat.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
       },
       name: {
         type: DataTypes.STRING,

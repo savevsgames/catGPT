@@ -1,4 +1,4 @@
-import { Cat } from "../models/cat.js";
+import { Cat } from "../models/index.js";
 
 export const seedCats = async () => {
   await Cat.bulkCreate([
