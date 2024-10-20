@@ -122,7 +122,7 @@ async function saveInteraction(
       return; // Exit early in mock mode
     }
 
-    // Create a new Interaction record in real mode
+    // Create a new Interaction record in the database when MOCK_DATA is false
     await Interaction.create({
       userId,
       catId,
@@ -131,7 +131,7 @@ async function saveInteraction(
       interactionDate: new Date(),
     });
 
-    // If new mood is included, update the cat's mood
+    // If new mood is included, update the cat's mood - not implemented yet
     if (newMood !== undefined) {
       await Cat.update({ mood: newMood }, { where: { id: catId } });
     }
@@ -143,6 +143,7 @@ async function saveInteraction(
 
 // Main route handler to manage chat interactions
 export const chatWithCat = async (
+  // No Url Params, No Query Params, Request Body is a UserChatRequest
   req: Request<{}, {}, UserChatRequest>,
   res: Response
 ) => {
@@ -215,9 +216,9 @@ export const chatWithCat = async (
         },
       ],
     };
-    console.log("user", user);
-    console.log("cat", cat);
-    console.log("recentInteractions", recentInteractions);
+    // console.log("user", user);
+    // console.log("cat", cat);
+    // console.log("recentInteractions", recentInteractions);
 
     // Format the chat prompt with the user's input and cat's data
     const formattedPrompt = await formatChatPrompt(
