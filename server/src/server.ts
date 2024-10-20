@@ -1,5 +1,6 @@
 import sequelize from "./config/connection.js";
 import express from "express";
+import routes from "./routes/index.js";
 
 const forceDatabaseRefresh = false;
 
@@ -12,7 +13,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use(routes);
+app.use(routes);
 
 // connect to the database before starting up the express.js server
 sequelize
