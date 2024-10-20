@@ -1,18 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import AuthService from '../utils/auth'
 
 function NavBar() {
     const [loggedIn, setLoggedIn] = useState(false);
 
-    const handleLogin = () => {
-        //login call function
-        setLoggedIn(true);
+    const checkLoggedIn = () => {
+        if (AuthService.loggedIn()) {
+            setLoggedIn(true);
+        }
     };
 
+    useEffect(()=> {
+        checkLoggedIn();
+    }, [loggedIn]);
+
     const handleLogout = () => {
-        //logout function
+        AuthService.logout();
         setLoggedIn(false);
     }
+    
     return (
         <nav className="bg-stone-500 w-full flex p-4 top-0 left-0 rounded-tr rounded-tl">
             <div className="container mx-auto flex justify-between items-center">
