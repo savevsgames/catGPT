@@ -17,6 +17,9 @@
   "devDependencies": {
     "@types/node": "^22.7.6"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.5"
+  },
   "dependencies": {
     "web-vitals": "^4.2.3"
   }
