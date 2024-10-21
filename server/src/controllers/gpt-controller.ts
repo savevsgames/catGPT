@@ -104,7 +104,7 @@ const MOCK_DATA = true; // For testing only - once db is seeded, set to false / 
 
 async function saveInteraction(
   userId: number,
-  catId: string,
+  catId: number,
   summary: string,
   interactionType: "play" | "gift" | "feed",
   newMood?: number
@@ -169,7 +169,7 @@ export const chatWithCat = async (
         yarn: 100,
       },
       cat: {
-        id: "1",
+        id: 1,
         name: "Whiskers",
         skin: "Tabby",
         personality: "Playful",
@@ -178,45 +178,45 @@ export const chatWithCat = async (
         isAlive: true,
         userId: 1,
       },
-      recentInteractions: <Interaction[]>[
+      recentInteractions: <Interaction[]>(<unknown>[
         {
           interactionType: "play",
           interactionDate: new Date(),
           description: "Test Description",
           userId: 1,
-          catId: "1",
+          catId: 1,
         },
         {
           interactionType: "feed",
           interactionDate: new Date(),
           description: "Fed the cat some tuna",
           userId: 1,
-          catId: "1",
+          catId: 1,
         },
         {
           interactionType: "gift",
           interactionDate: new Date(),
           description: "Gave the cat a new toy mouse",
           userId: 1,
-          catId: "1",
+          catId: 1,
         },
         {
           interactionType: "play",
           interactionDate: new Date(),
           description: "Played with a laser pointer",
           userId: 1,
-          catId: "1",
+          catId: 1,
         },
         {
           interactionType: "feed",
           interactionDate: new Date(),
           description: "Gave the cat some milk",
           userId: 1,
-          catId: "1",
+          catId: 1,
         },
-      ],
+      ]),
     };
-    // console.log("user", user);
+    console.log("user", user);
     // console.log("cat", cat);
     // console.log("recentInteractions", recentInteractions);
 
