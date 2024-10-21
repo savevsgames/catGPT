@@ -13,5 +13,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.7.6"
+  },
+  "dependencies": {
+    "web-vitals": "^4.2.3"
   }
 }
