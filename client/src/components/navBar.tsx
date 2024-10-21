@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import AuthService from '../utils/auth'
 
 function NavBar() {
@@ -11,7 +11,7 @@ function NavBar() {
         }
     };
 
-    useEffect(()=> {
+    useEffect(() => {
         checkLoggedIn();
     }, [loggedIn]);
 
@@ -19,7 +19,7 @@ function NavBar() {
         AuthService.logout();
         setLoggedIn(false);
     }
-    
+
     return (
         <nav className="bg-stone-500 w-full flex p-4 top-0 left-0 rounded-tr rounded-tl">
             <div className="container mx-auto flex justify-between items-center">
@@ -28,9 +28,11 @@ function NavBar() {
                 </Link>
                 <div>
                     {loggedIn ? (
-                        <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleLogout}>Logout</button>
+                        <button className="bg-red-500 text-white px-4 py-2 rounded"
+                                onClick={handleLogout}>Logout</button>
                     ) : (
-                        <button className="bg-yellow-500 text-black px-4 py-2 rounded" onClick={handleLogin}>Login</button>
+                        <button className="bg-yellow-500 text-black px-4 py-2 rounded">Login</button>
+                        // <button className="bg-yellow-500 text-black px-4 py-2 rounded" onClick={handleLogin}>Login</button>
                     )}
                 </div>
             </div>
