@@ -2,7 +2,7 @@
 export interface UserChatRequest {
   userChat: string;
   userId: number;
-  catId: string;
+  catId: number;
 }
 
 export interface GPTStructuredResponse {
@@ -12,7 +12,7 @@ export interface GPTStructuredResponse {
 }
 
 export interface CatProfile {
-  id: string;
+  id: number;
   name: string;
   skin: string;
   personality: string;
