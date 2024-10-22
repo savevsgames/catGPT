@@ -23,13 +23,14 @@ function Layout() {
 function App() {
     return (
         <Routes>
-            <Route path="/" element={<Layout />}>
-                <Route key="LandingPage" index element={<Landing />} />
-                <Route key="SignUp" path="signup" element={<Signup />} />
-                <Route key-="Login" path="login" element={<Login />} />
-                {/*<Route key-="Profile" element={<Profile />} />*/}
-                {/*<Route key-="Cat" element={<Cat />} />*/}
-                <Route key-="Error" path="*" element={<Error />} />
+            <Route path="/" element={<Layout/>}>
+                <Route key="LandingPage" index element={<Landing/>}/>
+                <Route key="SignUp" path="signup" element={<Signup/>}/>
+                <Route key-="Login" path="login" element={<Login/>}/>
+                {/*Route key="Home" path="home" element={<Home />} />*/}
+                {/*<Route key-="Profile" path="profile" element={<Profile />} />*/}
+                {/*<Route key-="Cat" path="cat" element={<Cat />} />*/}
+                <Route key-="Error" path="*" element={<Error/>}/>
             </Route>
         </Routes>
     )
