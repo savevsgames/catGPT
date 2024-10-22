@@ -1,0 +1,4 @@
+DB_NAME=catgpt_db
+DB_USER=
+DB_PASSWORD=
+OPENAI_API_KEY=
