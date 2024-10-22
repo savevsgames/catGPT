@@ -24,7 +24,7 @@ function NavBar() {
         <nav className="bg-stone-500 w-full flex p-4 top-0 left-0 rounded-tr rounded-tl">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to='/' className="flex items-center space-x-2">
-                    <img src="/src/assets/logo.png" alt="Cat Logo" className="h-10 w-30"/>
+                    <img src="assets/logo.png" alt="Cat Logo" className="h-10 w-30"/>
                 </Link>
                 <div>
                     {loggedIn ? (
