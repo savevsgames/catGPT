@@ -1,5 +1,5 @@
 // import Auth from '../utils/auth';
-import { UserData } from "../interfaces/userData";
+import { UserData } from "../interfaces/UserData";
 import { ApiMessage } from "../interfaces/ApiMessage";
 
 // get all users
