@@ -19,6 +19,7 @@ const retrieveUsers = async () => {
     return data;
   } catch (error: any) {
     console.log("Error retrieving data:", error);
+    return [];
   }
 };
 
