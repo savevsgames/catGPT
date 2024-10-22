@@ -26,7 +26,7 @@ export const getAllInteractions = async (_req: Request, res: Response) => {
   }
 };
 
-// GET /interactions/:id - get a single interaction by id
+// GET /interactions/:id - get a single interaction by id. not sure if we would use this at any point tbh
 export const getInteractionById = async (req: Request, res: Response) => {
   try {
     const interaction = await Interaction.findByPk(req.params.id, {
