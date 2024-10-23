@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "cd client && npm i && cd ../server && npm i",
-    "server" : "cd server && npm run start",
+    "server": "cd server && npm run start",
     "client:build": "cd client && npm run build",
-    "client:dev" : "cd client && npm run dev",
+    "client:dev": "cd client && npm run dev",
     "render:build": "npm i && cd client && npm run build && cd ../server && npm run build",
     "render:start": "npm run client:build && npm run server"
   },
@@ -16,7 +16,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.7.6"  
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.7.6"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.24.0"

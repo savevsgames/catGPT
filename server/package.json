@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc",
+    "build": "npx tsc && npm run copy-js",
+    "copy-js": "copyfiles src/controllers/langchain-controller.js dist/controllers",
     "start": "npm run build && node dist/server.js --ignore client",
     "seed": "node dist/seeds/index.js"
   },
@@ -14,10 +15,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/community": "^0.3.8",
     "@langchain/core": "^0.3.13",
     "@langchain/openai": "^0.3.11",
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.6",
+    "@upstash/redis": "^1.34.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -29,6 +32,7 @@
     "typescript": "^5.6.3"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2"
+    "@types/bcrypt": "^5.0.2",
+    "copyfiles": "^2.4.1"
   }
 }
