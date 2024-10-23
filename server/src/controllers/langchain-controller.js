@@ -74,6 +74,8 @@ const upstashMessageHistory = new UpstashRedisChatMessageHistory({
   },
 });
 
+// Here is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
+
 // Memory Setup with BufferMemory
 const memory = new BufferMemory({
   memoryKey: "history",

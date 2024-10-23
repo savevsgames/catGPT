@@ -18,7 +18,7 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      // Use full URL if backend is on a different port (adjust as needed)
+      // Use the jwt to get the user id and params to get the cat id
       const res = await fetch("/api/chat/cat001", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
