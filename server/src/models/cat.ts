@@ -15,7 +15,7 @@ export class Cat extends Model<
 > {
   declare id: CreationOptional<number>;
   declare name: string;
-  declare avatar: string;
+  declare avatar?: string;
   declare skin: string;
   declare personality: string; // we are using this to narrow down the user's chatGPT prompts with the cat
   // did not include the createdAt in here, sequelize will create that by itself since timestamps are set to true
@@ -40,7 +40,8 @@ export function CatFactory(sequelize: Sequelize) {
       },
       avatar: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        //add default value when no avatar is available
       },
       skin: {
         type: DataTypes.STRING, // still verify what the skin is for. weird
