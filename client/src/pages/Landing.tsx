@@ -14,7 +14,7 @@ const Landing = () => {
     "https://picsum.photos/300/300",
     "https://picsum.photos/350/300",
   ];
-  
+
   // TODO: Make the pictures more evenly spread out, rather than this basic random positioning
   const randomPosition = () => Math.floor(Math.random() * 80);
   // Making a set of coordinates for each picture in the picture array
