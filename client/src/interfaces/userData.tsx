@@ -1,9 +1,7 @@
-export interface UserData {
-    id: number | null;
-    username: string | null;
-    email: string | null;
-    userRole: string | null;
-    bio: string | null;
-    yarn: number | null;
+import { SignUpData } from "./SignUpData.tsx";
 
+export interface UserData extends SignUpData {
+    id: number | null;
+    userRole: string | null;
+    yarn: number | null;
 }
