@@ -119,7 +119,7 @@ const prompt = ChatPromptTemplate.fromTemplate(`
 
 // Function to Handle the User-Cat Interaction - will be recursively called for each user input in the CLI chat for now
 // Will be replaced with a single call from the UI to the backend API
-async function interactWithCat(userId, catId, userInput) {
+export async function interactWithCat(userId, catId, userInput) {
   const inputs = await prepareChatInputs(userId, catId, userInput);
 
   // Format the inputs using the defined prompt template
@@ -160,3 +160,5 @@ function startChat(userId, catId) {
 
 // Start Chat Session between fake user and fake cat - will be replaced with actual user and cat IDs when UI is integrated
 startChat("user123", "cat456");
+
+export default interactWithCat;
