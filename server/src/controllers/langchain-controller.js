@@ -108,19 +108,28 @@ async function prepareChatInputs(userId, catId, userInput) {
   };
 }
 
-// Define the Prompt Template
-const prompt = ChatPromptTemplate.fromTemplate(`
-  You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer. 
-  Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
-  User: {userName}, Cat: {catName}, Current Mood: {catMood}, Total Interactions: {interactionCount}
-  Chat History: {history}
-  {input}
-  `);
+// // Define the Prompt Template
+// const prompt = ChatPromptTemplate.fromTemplate(`
+//   You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer.
+//   Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
+//   User: ${userName}, Cat: ${catName}, Current Mood: ${catMood}, Total Interactions: ${interactionCount}
+//   Chat History: ${history}
+//   ${input}
+//   `);
 
 // Function to Handle the User-Cat Interaction - will be recursively called for each user input in the CLI chat for now
 // Will be replaced with a single call from the UI to the backend API
 export async function interactWithCat(userId, catId, userInput) {
   const inputs = await prepareChatInputs(userId, catId, userInput);
+
+  // Define the Prompt Template
+  const prompt = ChatPromptTemplate.fromTemplate(`
+  You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer. 
+  Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
+  User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
+  Chat History: ${inputs.history}
+  ${inputs.input}
+  `);
 
   // Format the inputs using the defined prompt template
   const formattedInput = await prompt.format(inputs);

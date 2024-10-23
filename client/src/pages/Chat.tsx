@@ -19,7 +19,7 @@ export default function Chat() {
 
     try {
       // Use full URL if backend is on a different port (adjust as needed)
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/chat/cat001", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

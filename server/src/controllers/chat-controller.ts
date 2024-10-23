@@ -12,6 +12,7 @@ export const chatWithCat = async (req: Request, res: Response) => {
   try {
     // const response = await interactWithCat(userId, catId, input);
     const response = await interactWithCat(userId, catId, input);
+    // This should have the jwt injected into the call every time - session token can pulled from it
     res.status(200).json(response);
   } catch (error) {
     console.error("Error interacting with cat:", error);
