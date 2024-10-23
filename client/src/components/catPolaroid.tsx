@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 const randomRotation = () => Math.floor(Math.random() * 21) - 10; // Random angle between -10 and 10 degrees
 const randomPosition = () => Math.ceil(Math.random() * 40);
 
+
 const randomPositionArr = [
     {
         x: randomPosition(),
@@ -24,8 +25,10 @@ const randomPositionArr = [
 ]
 
 interface Props {
-    index: number;
-    photoURL: string;
+  index: number;
+  photoURL: string;
+  topPercent: string | "50%";
+  leftPercent: string | "50%";
 }
 
 function CatPolaroid(props: Props) {
