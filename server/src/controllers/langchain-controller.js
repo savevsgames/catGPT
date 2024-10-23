@@ -8,13 +8,13 @@ import { BufferMemory } from "langchain/memory";
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";
 
 // Temporarily using readline for testing the chat - will be replaced with the UI integration
-import readline from "readline";
+// import readline from "readline";
 
-// Set up the readline interface
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+// // Set up the readline interface
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+// });
 
 // SQL Data Retrieval
 async function getUserAndCatData(userId, catId) {
@@ -57,7 +57,7 @@ async function getUserAndCatData(userId, catId) {
 }
 
 // Mock Data - hardcoded for now - will be replaced with state values pulled from the database/clicked on the UI
-// const catAndUserData = await getUserAndCatData("user123", "cat456");
+const catAndUserData = await getUserAndCatData("user123", "cat456");
 
 // Initialize the Chat Model
 const model = new ChatOpenAI({
@@ -131,7 +131,7 @@ export async function interactWithCat(userId, catId, userInput) {
   // Save the context (user input and AI response) to Redis memory
   await memory.saveContext({ input: userInput }, { output: response.content });
 
-  // Return a structured response with mood and timestamp
+  // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
     content: response.content,
     mood: inputs.catMood,
@@ -140,25 +140,23 @@ export async function interactWithCat(userId, catId, userInput) {
 }
 
 // Recursive chat function to test the chat before integrating with the UI
-function startChat(userId, catId) {
-  console.log(
-    `Hello, ${user.username}! You are now chatting with ${cat.name}.`
-  );
-  rl.setPrompt(`${user.username}: `);
-  rl.prompt();
+// function startChat(userId, catId) {
+//   console.log(`Hello, ${userName}! You are now chatting with ${catName}.`);
+//   rl.setPrompt(`${userName}: `);
+//   rl.prompt();
 
-  rl.on("line", async (line) => {
-    const response = await interactWithCat(userId, catId, line.trim());
-    console.log(`${response.content}`);
-    rl.prompt(); // Prompt user for next input
-  }).on("close", () => {
-    // When you use Ctrl+C to exit the chat this will log "Chat ended." and exit the process - effectively ending the chat
-    console.log("Chat ended.");
-    process.exit(0);
-  });
-}
+//   rl.on("line", async (line) => {
+//     const response = await interactWithCat(userId, catId, line.trim());
+//     console.log(`${response.content}`);
+//     rl.prompt(); // Prompt user for next input
+//   }).on("close", () => {
+//     // When you use Ctrl+C to exit the chat this will log "Chat ended." and exit the process - effectively ending the chat
+//     console.log("Chat ended.");
+//     process.exit(0);
+//   });
+// }
 
-// Start Chat Session between fake user and fake cat - will be replaced with actual user and cat IDs when UI is integrated
-startChat("user123", "cat456");
+// // Start Chat Session between fake user and fake cat - will be replaced with actual user and cat IDs when UI is integrated
+// startChat("user123", "cat456");
 
 export default interactWithCat;

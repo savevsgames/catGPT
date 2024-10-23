@@ -1,6 +1,7 @@
 import sequelize from "./config/connection.js";
 import express from "express";
 import routes from "./routes/index.js";
+import cors from "cors";
 
 const forceDatabaseRefresh = false;
 
@@ -14,6 +15,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(routes);
+
+// Allow cross-origin requests from the frontend for testing because we have a proxy setup in the frontend
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with frontend origin
+    methods: ["GET", "POST"], // Specify allowed methods
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 // connect to the database before starting up the express.js server
 sequelize
