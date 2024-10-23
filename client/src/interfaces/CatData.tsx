@@ -1,7 +1,7 @@
 export interface CatData {
     id: number | null;
-    name: string | null;
-    avatar: string | null;
+    name: string;
+    avatar: string;
     skin: string | null;
     personality: string | null;
     mood: number | null;

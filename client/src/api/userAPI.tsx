@@ -1,6 +1,7 @@
 // import Auth from '../utils/auth';
-import { UserData } from "../interfaces/UserData";
+import { SignUpData } from "../interfaces/SignUpData";
 import { ApiMessage } from "../interfaces/ApiMessage";
+import { UserData } from "../interfaces/userData"
 
 // get all users
 const retrieveUsers = async () => {
@@ -48,7 +49,7 @@ const retrieveUser = async (id: number | null): Promise<UserData> => {
 };
 
 // POST
-const createUser = async (body: UserData) => {
+const createUser = async (body: SignUpData) => {
   try {
     const response = await fetch("/api/users/", {
       method: "POST",
