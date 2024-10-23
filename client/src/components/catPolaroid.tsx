@@ -1,28 +1,6 @@
 import {Link} from "react-router-dom";
 
-
 const randomRotation = () => Math.floor(Math.random() * 21) - 10; // Random angle between -10 and 10 degrees
-const randomPosition = () => Math.ceil(Math.random() * 40);
-
-
-const randomPositionArr = [
-    {
-        x: randomPosition(),
-        y: randomPosition(),
-    },
-    {
-        x: randomPosition() + 40,
-        y: randomPosition(),
-    },
-    {
-        x: randomPosition(),
-        y: randomPosition() + 40,
-    },
-    {
-        x: randomPosition() + 40,
-        y: randomPosition() + 40,
-    }
-]
 
 interface Props {
   index: number;
@@ -44,8 +22,8 @@ function CatPolaroid(props: Props) {
                 className="absolute w-40 h-40 object-cover rounded shadow-lg"
                 style={{
                     transform: `rotate(${randomRotation()}deg)`,
-                    top: `${randomPositionArr[props.index].y}%`,
-                    left: `${randomPositionArr[props.index].x}%`,
+                    top: props.topPercent,
+                    left: props.leftPercent,
                     paddingRight: '10px',
                     paddingLeft: '10px',
                     paddingTop: '10px',
