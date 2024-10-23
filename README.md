@@ -120,8 +120,8 @@ This project is a collaborative effort by the following contributors:
 
 - **Souad**
 
-  - GitHub Profile: [GitHub Profile](#)
-  - Email: [souad@example.com](mailto:souad@example.com)
+  - GitHub Profile: [souad-hb](#)
+  - Email: [souad@example.com](mailto:souadsalahh@gmail.com)
 
 - **Thomas**
 

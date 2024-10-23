@@ -45,11 +45,20 @@ export const getCatById = async (req: Request, res: Response) => {
 // POST /cats - create a cat, not sure if we're going to need this
 export const createCat = async (req: Request, res: Response) => {
   try {
-    const { name, skin, personality, mood, deathFlag, isAlive, userId } =
-      req.body;
+    const {
+      name,
+      avatar,
+      skin,
+      personality,
+      mood,
+      deathFlag,
+      isAlive,
+      userId,
+    } = req.body;
     const cat = await Cat.create({
       name,
       skin,
+      avatar,
       personality,
       mood,
       deathFlag,
@@ -65,13 +74,22 @@ export const createCat = async (req: Request, res: Response) => {
 // PUT /cats/:id - update a cat by id
 export const updateCat = async (req: Request, res: Response) => {
   try {
-    const { name, skin, personality, mood, deathFlag, isAlive, userId } =
-      req.body;
+    const {
+      name,
+      skin,
+      avatar,
+      personality,
+      mood,
+      deathFlag,
+      isAlive,
+      userId,
+    } = req.body;
     const cat = await Cat.findByPk(req.params.id);
     if (!cat) {
       res.status(404).json({ message: "Cat not found" });
     } else {
       cat.name = name;
+      cat.avatar = avatar;
       cat.skin = skin;
       cat.personality = personality;
       (cat.mood = mood), (cat.deathFlag = deathFlag);
