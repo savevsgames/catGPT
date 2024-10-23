@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createUser } from '../api/userAPI';
+import { SignUpData } from '../interfaces/SignUpData';
 
 const Signup: React.FC = () =>  {
     
@@ -7,6 +9,7 @@ const Signup: React.FC = () =>  {
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         email: '',
+        username:'',
         password: '',
         confirmPass: '',
         bio: '',
@@ -30,25 +33,16 @@ const Signup: React.FC = () =>  {
         setError(null);
         setLoading(true);
 
-        try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(form),
-            });
-
-            if (!response.ok) {
-                throw new Error('Unable to signup... please try again.');
-            }
-
-            navigate('/login')
-        } catch (err: any) {
-            setError(err.message || 'An error ocurred, please try again.');
-        } finally {
-            setLoading(false);
+        const newUser: SignUpData = {
+            username: form.username,
+            email: form.email,
+            password: form.password,
+            bio: form.bio,
         }
+       
+        createUser(newUser);
+        navigate('/login');
+
     };
     
     return (
@@ -61,6 +55,17 @@ const Signup: React.FC = () =>  {
                         type='email'
                         name='email'
                         value={form.email}
+                        onChange={handleChange}
+                        required
+                        className='w-full p-2 border border-gray-300 rounded'
+                    />
+                </div>
+                <div>
+                    <label className='block text-lg mb-2'>Username</label>
+                    <input
+                        type='text'
+                        name='username'
+                        value={form.username}
                         onChange={handleChange}
                         required
                         className='w-full p-2 border border-gray-300 rounded'
