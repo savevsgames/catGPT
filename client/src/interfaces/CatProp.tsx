@@ -4,5 +4,5 @@ export interface CatProp {
     cat: CatData;
     AdoptClick: () => {
        
-    }; //Need adopt function
+    }; //adopt function
 }
