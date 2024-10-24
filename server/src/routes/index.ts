@@ -6,6 +6,7 @@ import apiRoutes from "./api/index.js";
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/", authRoutes);
 
 // added middleware for authetication for all apiRoutes.
 router.use("/api", authenticateToken, apiRoutes);
