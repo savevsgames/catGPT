@@ -5,18 +5,23 @@ import bcrypt from "bcrypt";
 
 // login function
 export const login = async (req: Request, res: Response): Promise<any> => {
+
   try {
     const { username, password } = req.body;
-
+    console.log({ username });
+    console.log({ password });
     const user = await User.findOne({
       where: { username },
     });
+    console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Authentication Failed" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
+      console.log(password);
+      console.log(user.password);
       return res.status(401).json({ message: "Authentication Failed" });
     }
 
