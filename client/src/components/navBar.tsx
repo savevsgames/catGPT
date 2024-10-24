@@ -10,12 +10,14 @@ function NavBar() {
     const checkLoggedIn = () => {
         if (AuthService.loggedIn()) {
             setLoggedIn(true);
+        } else {
+            setLoggedIn(false);
         }
     };
 
     useEffect(() => {
         checkLoggedIn();
-    }, [loggedIn]);
+    }, []);
 
     const handleLogin = () => {
         navigate("/Login");
@@ -24,6 +26,7 @@ function NavBar() {
     const handleLogout = () => {
         AuthService.logout();
         setLoggedIn(false);
+        navigate("/");
     }
 
     return (
