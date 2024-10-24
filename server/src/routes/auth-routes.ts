@@ -29,7 +29,11 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(500).json({ message: "JWT Secret key not configured" });
     }
 
-    const token = jwt.sign({ username }, secretKey, { expiresIn: "2h" });
+    const token = jwt.sign(
+      { username: user.username, id: user.id },
+      secretKey,
+      { expiresIn: "2h" }
+    );
 
     return res.json({ token });
   } catch (error) {

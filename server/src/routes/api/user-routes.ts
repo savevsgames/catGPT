@@ -5,12 +5,16 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  getUserCats,
 } from "../../controllers/user-controller.js";
 
 const router = express.Router();
 
 // GET /users - get all users
 router.get("/", getAllUsers);
+
+// GET /users/cats -get the cats for a single user
+router.get("/adoptedcats", getUserCats);
 
 // GET /users/:id - get user by id
 router.get("/:id", getUserById);

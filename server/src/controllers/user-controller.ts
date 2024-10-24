@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/index.js";
+import { Cat } from "../models/index.js";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -16,6 +17,28 @@ export const getAllUsers = async (_req: Request, res: Response) => {
     }
 
     res.json(users);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET all user cats /users/adoptedcats
+export const getUserCats = async (req: Request, res: Response) => {
+  const userId = req.user?.id; // get the id of the authenticated user through the jwt token
+  console.log("userId is", userId); // testing
+if (!userId) {
+  console.log('User not authenticated or not found')
+}
+
+  try {
+    const userCats = await Cat.findAll({
+      where: { userId },
+    });
+    if (!userCats || userCats.length === 0) {
+      res.status(401).json("No cats associated with this user");
+    }
+
+    res.status(200).json(userCats);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
