@@ -6,9 +6,10 @@ class AuthService {
     const decoded: JwtPayload = jwtDecode(this.getToken());
     return decoded;
   }
+  
   loggedIn() {
     const token = this.getToken();
-    return token;
+    return !!token;
   }
 
   isTokenExpired(token: string) {
@@ -32,7 +33,7 @@ class AuthService {
 
   logout() {
     localStorage.removeItem("id_token");
-    window.location.assign("/");
+    // window.location.assign("/");
   }
 }
 
