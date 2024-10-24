@@ -25,6 +25,26 @@ const retrieveUsers = async () => {
   }
 };
 
+// get /users/adoptedcats - get the adopted cats by logged in user
+const retrieveUserCats = async () => {
+  try {
+    const response = await fetch("/api/users/adoptedcats", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+    });
+    const data = response.json();
+    if (!response.ok) {
+      throw new Error("Error retrieving the user.s adopted cats");
+    }
+    return data;
+  } catch (error: any) {
+    console.log("Error retrieving data:", error);
+    return [];
+  }
+};
+
 // retrieve user data by id -this is mostly for the Profile page
 const retrieveUser = async (id: number | null): Promise<UserData> => {
   try {
@@ -120,4 +140,11 @@ const deleteUser = async (id: number): Promise<ApiMessage> => {
   }
 };
 
-export { retrieveUsers, retrieveUser, createUser, updateUser, deleteUser };
+export {
+  retrieveUsers,
+  retrieveUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  retrieveUserCats,
+};

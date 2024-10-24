@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 interface JwtPayload {
   username: string;
+  id: number;
 }
 
 export const authenticateToken = (
@@ -23,6 +24,8 @@ export const authenticateToken = (
         return res.sendStatus(403); // forbidden status
       }
       req.user = user as JwtPayload;
+      console.log('middleware auth', user)
+
       return next();
     });
   } else {

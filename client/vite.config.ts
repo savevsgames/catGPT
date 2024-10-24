@@ -5,7 +5,7 @@ import tailwindcss from "tailwindcss";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 3001,
+    port: 3000,
     open: true,
     proxy: {
       "/api": {
@@ -13,7 +13,7 @@ export default defineConfig({
         changeOrigin: true, // Ensure the origin is changed to match the target
         secure: false, // Use `false` if not using HTTPS locally
       },
-      "/auth": {
+      "/auth": { //allowing the client to connect
         target: "http://localhost:3001",
         changeOrigin: true,
         secure: false,
