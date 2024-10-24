@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from "react";
 
 // The message interface will be replaced with the actual message schema once its working in base form
+
 interface Message {
   sender: string;
   content: string;
@@ -12,6 +13,9 @@ export default function Chat() {
 
   // Nook Pictures
   const nookPic = "./assets/nooks/nook1.png";
+
+  // User and Cat Data - Populated through user routing and SQL queries
+  const tempCatName = "Whisky";
 
   const handleSend = async (event: FormEvent) => {
     event.preventDefault(); // Prevent form from refreshing the page
@@ -85,33 +89,29 @@ export default function Chat() {
   }, []);
 
   return (
-    <div className="flex h-screen">
-      {/* Chat Messages on the Left Side? */}
+    <div className="flex max-h-full">
+      {/* Chat Messages Section */}
       <div
         className="w-2/3 p-4 border-r border-r-color_1 relative"
         style={{
           backgroundImage: `url(${nookPic})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          height: "100vh", // Full height to cover the chat area
+          height: "100vh",
         }}
       >
-        <div className="mb-4 h-[80%] overflow-y-auto p-4 space-y-4">
-          <h2 className="text-lg font-bold text-white">Chat with CatName</h2>
-          <p className="text-white">
-            We will have an image wrap this whole thing and make it the
-            catChatBackground set on top of the image that is sitting below
-            right now. Make each message a bubble, rounded border radius, with a
-            white background and a shadow around it.
-          </p>
+        <div className="mb-4 max-h-[70%] p-4 space-y-4">
+          <h1 className="text-3xl font-bold text-color_2 underline underline-offset-4 bg-color_1 text-center rounded-md p-2 shadow-2xl shadow-color_4">
+            Chat with {tempCatName}
+          </h1>
 
           {messages.map((msg, index) => (
             <div
               key={index}
               className={`p-3 rounded-lg shadow-md max-w-xs ${
                 msg.sender === "You"
-                  ? "bg-blue-100 ml-auto"
-                  : "bg-white mr-auto"
+                  ? "ml-auto bg-color_4 text-color_b"
+                  : "mr-auto bg-color_2 text-color_1"
               }`}
             >
               <strong>{msg.sender}:</strong> {msg.content}
@@ -121,33 +121,35 @@ export default function Chat() {
 
         <form
           onSubmit={handleSend}
-          className="absolute bottom-0 left-0 w-full p-4 flex bg-white border-t"
+          className="absolute bottom-0 left-0 w-full p-4 flex bg-color_1 border-t border-color_1"
         >
           <input
             type="text"
-            className="border p-2 flex-grow rounded-lg"
+            className="border border-color_1 p-2 flex-grow rounded-lg bg-white text-color_1"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
+            placeholder="Talk to your cat..."
           />
           <button
             type="submit"
-            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
+            className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors"
           >
             Send
           </button>
         </form>
       </div>
 
-      {/* Action Buttons on the Right Side */}
-      <div className="w-1/3 p-4">
-        <h2 className="text-xl font-bold mb-4">Actions</h2>
+      {/* Action Buttons Section */}
+      <div className="w-1/3 p-4 bg-color_1 flex flex-col gap-10 justify-start">
+        <h2 className="text-xl font-bold text-color_2 text-center mt-12">
+          Actions
+        </h2>
 
         {["Play", "Feed", "Gift"].map((action) => (
           <button
             key={action}
-            className="w-full mb-2 px-4 py-2 border-2 border-orange-500 text-orange-500 font-bold bg-white 
-                 hover:bg-orange-500 hover:text-white transition-colors duration-200"
+            className="w-full px-4 py-2 border-2 rounded-3xl border-color_3 text-2xl text-color_b font-serif font-extrabold bg-color_2 
+            hover:bg-color_4 transition-colors duration-200"
             onClick={() => handleInteraction(action.toLowerCase())}
           >
             {action}
