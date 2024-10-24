@@ -32,7 +32,7 @@ const Landing = () => {
 
   return (
     <div className="relative bg-yellow-100 min-h-screen p-10 flex justify-center items-center">
-      <div className="relative w-full max-w-5xl h-[600px] bg-[#d7b899] rounded-lg shadow-lg overflow-hidden">
+      <div className="relative w-full max-w-5xl h-[600px] bg-color_1 rounded-lg shadow-lg overflow-hidden">
         {/* Render yarn connections */}
         {catApiPercentCoordinates.map((coordinate, index) => {
           const nextCoordinate = catApiPercentCoordinates[(index + 1) % catApiPercentCoordinates.length];
