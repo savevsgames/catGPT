@@ -1,27 +1,34 @@
 import CatPolaroid from "../components/catPolaroid.tsx";
 import YarnConnection from "../components/yarnConnection.tsx";
 
-
 const Landing = () => {
   // The array of pictures
   const catApiPhotos = [
     "https://picsum.photos/350/300",
-    "https://picsum.photos/350/300",
+    "https://picsum.photos/450/300",
     "https://picsum.photos/300/300",
-    "https://picsum.photos/350/300",
+    "https://picsum.photos/350/400",
     "https://picsum.photos/350/300",
     "https://picsum.photos/350/300",
     "https://picsum.photos/300/300",
     "https://picsum.photos/350/300",
   ];
 
-  // TODO: Make the pictures more evenly spread out, rather than this basic random positioning
-  const randomPosition = () => Math.floor(Math.random() * 80);
+  const catApiPhotos4 = catApiPhotos.slice(0, 4)
+
   // Making a set of coordinates for each picture in the picture array
-  const catApiPercentCoordinates = catApiPhotos.map(() => ({
-    top: randomPosition(),
-    left: randomPosition()
-  }));
+  const randomPosition = (index: number) => {
+    const edgeLimit = (value: number) => Math.min(Math.max(value,20),80);
+    const randomCoord = () => Math.random() * 60 -5;
+    const row = Math.floor(index / 2);
+    const col = index % 2;
+
+    return {
+      top: edgeLimit(randomCoord() + row * 50),
+      left: edgeLimit(randomCoord() + col * 50),
+    }
+  }
+  const catApiPercentCoordinates = catApiPhotos.map((_, index) => randomPosition(index));
 
   return (
     <div className="relative bg-yellow-100 min-h-screen p-10 flex justify-center items-center">
@@ -42,7 +49,7 @@ const Landing = () => {
         })}
 
         {/* Render the cat photos */}
-        {catApiPhotos.map((photo, index) => (
+        {catApiPhotos4.map((photo, index) => (
           <div key={index}>
             <CatPolaroid
               index={index}
