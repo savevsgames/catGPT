@@ -12,7 +12,7 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
 
   // Nook Pictures
-  const nookPic = "./assets/nooks/nook1.png";
+  const nookPic = "./assets/nooks/nook4.png";
 
   // User and Cat Data - Populated through user routing and SQL queries
   const tempCatName = "Whisky";
@@ -90,10 +90,10 @@ export default function Chat() {
   }, []);
 
   return (
-    <div className="flex" style={{ minHeight: "calc(100vh - 100px)" }}>
+    <div className="flex h-full w-full">
       {/* Chat Messages Section */}
       <div
-        className="w-2/3 p-4 border-r border-r-color_1 relative flex flex-col"
+        className="flex flex-col w-2/3 p-4 border-r border-r-color_1 relative"
         style={{
           backgroundImage: `url(${nookPic})`,
           backgroundSize: "cover",
@@ -106,7 +106,7 @@ export default function Chat() {
         </h1>
 
         {/* Chat Messages */}
-        <div className="flex-grow overflow-y-auto space-y-4 p-4">
+        <div className="flex-grow overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
             <div
               key={index}

@@ -11,14 +11,11 @@ import Error from "./pages/Error.tsx";
 
 function Layout() {
   return (
-    <div className="flex flex-col bg-gray-800" style={{ height: "100vh" }}>
-      <header>
+    <div className="h-screen flex flex-col bg-gray-800 overflow-hidden">
+      <header className="flex-shrink-0">
         <NavBar />
       </header>
-      <main
-        className="flex-grow p-4"
-        style={{ maxHeight: "calc(100vh - 100px)" }}
-      >
+      <main className="flex-grow overflow-hidden">
         {" "}
         <Outlet />
       </main>
