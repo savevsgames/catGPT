@@ -1,5 +1,6 @@
 import { ApiMessage } from "../interfaces/ApiMessage";
 import { CatData } from "../interfaces/CatData";
+import Auth from "../utils/auth";
 
 // if the response is valid, this one will return all cats along with the username of their owners. (it was set on the server side like that)
 const retrieveCats = async () => {
@@ -7,7 +8,7 @@ const retrieveCats = async () => {
     const response = await fetch("/api/cats", {
       headers: {
         "Content-Type": "application/json",
-        // include auth
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
     const data = await response.json();
@@ -29,7 +30,7 @@ const retrieveCat = async (id: number | null): Promise<CatData> => {
     const response = await fetch(`/api/cats/${id}`, {
       headers: {
         "Content-Type": "application/json",
-        //include auth
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
     const data = await response.json();
@@ -51,7 +52,7 @@ const createCat = async (body: CatData) => {
       headers: {
         method: "POST",
         "Content-Type": "application/json",
-        // include auth
+        Authorization: `Bearer ${Auth.getToken()}`,
         body: JSON.stringify(body),
       },
     });
@@ -77,7 +78,7 @@ const updateCat = async (
       headers: {
         method: "PUT",
         "Content-Type": "application/json",
-        // include auth
+        Authorization: `Bearer ${Auth.getToken()}`,
         body: JSON.stringify(body),
       },
     });
@@ -99,7 +100,7 @@ const deleteCat = async (id: number | null): Promise<ApiMessage> => {
       headers: {
         method: "DELETE",
         "Content-Type": "application/json",
-        // include auth
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
     const data = await response.json();
