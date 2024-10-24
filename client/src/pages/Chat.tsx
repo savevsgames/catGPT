@@ -16,6 +16,7 @@ export default function Chat() {
 
   // User and Cat Data - Populated through user routing and SQL queries
   const tempCatName = "Whisky";
+  const tempCatAvatar = "./assets/cats/cat-gpt-Asset 9.png";
 
   const handleSend = async (event: FormEvent) => {
     event.preventDefault(); // Prevent form from refreshing the page
@@ -89,22 +90,23 @@ export default function Chat() {
   }, []);
 
   return (
-    <div className="flex max-h-full">
+    <div className="flex" style={{ minHeight: "calc(100vh - 100px)" }}>
       {/* Chat Messages Section */}
       <div
-        className="w-2/3 p-4 border-r border-r-color_1 relative"
+        className="w-2/3 p-4 border-r border-r-color_1 relative flex flex-col"
         style={{
           backgroundImage: `url(${nookPic})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          height: "100vh",
         }}
       >
-        <div className="mb-4 max-h-[70%] p-4 space-y-4">
-          <h1 className="text-3xl font-bold text-color_2 underline underline-offset-4 bg-color_1 text-center rounded-md p-2 shadow-2xl shadow-color_4">
-            Chat with {tempCatName}
-          </h1>
+        {/* Chat Header */}
+        <h1 className="text-3xl font-bold text-color_2 underline underline-offset-4 bg-color_1 text-center rounded-md p-2 shadow-2xl shadow-color_4 mb-4">
+          Chat with {tempCatName}
+        </h1>
 
+        {/* Chat Messages */}
+        <div className="flex-grow overflow-y-auto space-y-4 p-4">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -118,10 +120,16 @@ export default function Chat() {
             </div>
           ))}
         </div>
-
+        {/* The bottom and left or right properties can be adjusted to make the images move a little maybe - post MVP */}
+        <img
+          src={tempCatAvatar}
+          alt="Cat Avatar"
+          className="absolute bottom-24 left-48 max-w-24"
+        />
+        {/* Message Input Form */}
         <form
           onSubmit={handleSend}
-          className="absolute bottom-0 left-0 w-full p-4 flex bg-color_1 border-t border-color_1"
+          className="p-4 flex bg-color_1 border-t border-color_1"
         >
           <input
             type="text"
@@ -140,15 +148,13 @@ export default function Chat() {
       </div>
 
       {/* Action Buttons Section */}
-      <div className="w-1/3 p-4 bg-color_1 flex flex-col gap-10 justify-start">
-        <h2 className="text-xl font-bold text-color_2 text-center mt-12">
-          Actions
-        </h2>
+      <div className="w-1/3 p-4 bg-color_1 flex flex-col items-center justify-center gap-10">
+        <h2 className="text-xl font-bold text-color_2">Actions</h2>
 
         {["Play", "Feed", "Gift"].map((action) => (
           <button
             key={action}
-            className="w-full px-4 py-2 border-2 rounded-3xl border-color_3 text-2xl text-color_b font-serif font-extrabold bg-color_2 
+            className="w-3/4 px-4 py-2 border-2 rounded-3xl border-color_3 text-2xl text-color_b font-serif font-extrabold bg-color_2 
             hover:bg-color_4 transition-colors duration-200"
             onClick={() => handleInteraction(action.toLowerCase())}
           >
