@@ -1,9 +1,13 @@
 import { Router } from "express";
+import authRoutes from "./auth-routes.js";
+import { authenticateToken } from "../middleware/auth.js";
 import apiRoutes from "./api/index.js";
 
 const router = Router();
 
-// right now we access the routes without auth. the middleware will be added later
-router.use("/api", apiRoutes);
+router.use("/auth", authRoutes);
+
+// added middleware for authetication for all apiRoutes.
+router.use("/api", authenticateToken, apiRoutes);
 
 export default router;
