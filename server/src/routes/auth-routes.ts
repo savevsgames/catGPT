@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 
 // login function
 export const login = async (req: Request, res: Response): Promise<any> => {
-
   try {
     const { username, password } = req.body;
     console.log({ username });
@@ -39,7 +38,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 };
 
 // signup function
-export const signup = async (req: Request, res: any) => {
+export const signup = async (req: Request, res: Response): Promise<any> => {
   try {
     // extract username, password, and other required fields from req.body
     const { username, email, password, bio } = req.body;

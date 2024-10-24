@@ -73,3 +73,19 @@ export const createInteraction = async (req: Request, res: Response) => {
 // no PUT request needed. I dont think we would be updating an interaction once it's made. at leats it doesnt make sense to me.
 
 // no DELETE request needed, because I dont think it's reasonable to delete an interaction once it's made.
+
+export const interactWithCat = async (req: Request, res: Response) => {
+  try {
+    const {description, userId, catId } = req.body;
+    const interaction = await Interaction.create({
+      interactionType: // takes it from the user input,
+      description,
+      interactionDate: new Date(), // automatically sets the date. no user interaction needed for that
+      userId,
+      catId,
+    });
+    res.status(201).json(interaction);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
