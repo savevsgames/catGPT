@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../api/authAPI";
 import { SignUpData } from "../interfaces/SignUpData";
+import Auth from "../utils/auth";
 
 const Signup: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,9 @@ const Signup: React.FC = () => {
     };
 
     try {
-      await signup(newUser);
+      const data = await signup(newUser);
+      setError("");
+      Auth.login(data.token);
       // if successful navigate to login page
       navigate("/home");
     } catch (err) {
