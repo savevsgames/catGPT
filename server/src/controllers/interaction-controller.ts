@@ -70,6 +70,8 @@ export const createInteraction = async (req: Request, res: Response) => {
   }
 };
 
+// GET interaction for a certain cats/:catId/interaction
+
 // no PUT request needed. I dont think we would be updating an interaction once it's made. at leats it doesnt make sense to me.
 
 // no DELETE request needed, because I dont think it's reasonable to delete an interaction once it's made.
