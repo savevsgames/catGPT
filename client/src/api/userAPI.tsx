@@ -1,7 +1,8 @@
 // import Auth from '../utils/auth';
 import { SignUpData } from "../interfaces/SignUpData";
 import { ApiMessage } from "../interfaces/ApiMessage";
-import { UserData } from "../interfaces/userData"
+import { UserData } from "../interfaces/userData";
+import Auth from "../utils/auth";
 
 // get all users
 const retrieveUsers = async () => {
@@ -9,7 +10,7 @@ const retrieveUsers = async () => {
     const response = await fetch("/api/users", {
       headers: {
         "Content-Type": "application/json",
-        // include auth in the response headers once done
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
     const data = await response.json();
@@ -30,7 +31,7 @@ const retrieveUser = async (id: number | null): Promise<UserData> => {
     const response = await fetch(`/api/users/${id}`, {
       headers: {
         "Content-Type": "application/json",
-        // include auth in the response headers once done
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
 
@@ -55,7 +56,7 @@ const createUser = async (body: SignUpData) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // include auth in the response headers once done
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
       body: JSON.stringify(body),
     });
@@ -80,7 +81,7 @@ const updateUser = async (id: number, body: UserData): Promise<UserData> => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        // include auth in the response headers once done
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
       body: JSON.stringify(body),
     });
@@ -104,7 +105,7 @@ const deleteUser = async (id: number): Promise<ApiMessage> => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        // include auth in the response headers once done
+        Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
     const data = await response.json();
