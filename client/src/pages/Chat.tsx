@@ -10,6 +10,9 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
+  // Nook Pictures
+  const nookPic = "./assets/nooks/nook1.png";
+
   const handleSend = async (event: FormEvent) => {
     event.preventDefault(); // Prevent form from refreshing the page
     const userMessage: Message = { sender: "You", content: input };
@@ -19,7 +22,7 @@ export default function Chat() {
 
     try {
       // Use the jwt to get the user id and params to get the cat id
-      const res = await fetch("/api/chat/cat001", {
+      const res = await fetch("/api/chat/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,34 +87,52 @@ export default function Chat() {
   return (
     <div className="flex h-screen">
       {/* Chat Messages on the Left Side? */}
-      <div className="w-2/3 p-4 border-r-color_1 border-r">
-        <div className="mb-4">
-          <h2 className="text-lg font-bold">Chat with CatName</h2>
-          <p>
+      <div
+        className="w-2/3 p-4 border-r border-r-color_1 relative"
+        style={{
+          backgroundImage: `url(${nookPic})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "100vh", // Full height to cover the chat area
+        }}
+      >
+        <div className="mb-4 h-[80%] overflow-y-auto p-4 space-y-4">
+          <h2 className="text-lg font-bold text-white">Chat with CatName</h2>
+          <p className="text-white">
             We will have an image wrap this whole thing and make it the
-            catChatBackground set in the user profile?
+            catChatBackground set on top of the image that is sitting below
+            right now. Make each message a bubble, rounded border radius, with a
+            white background and a shadow around it.
           </p>
+
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`mb-2 ${msg.sender === "You" ? "text-right" : ""}`}
+              className={`p-3 rounded-lg shadow-md max-w-xs ${
+                msg.sender === "You"
+                  ? "bg-blue-100 ml-auto"
+                  : "bg-white mr-auto"
+              }`}
             >
               <strong>{msg.sender}:</strong> {msg.content}
             </div>
           ))}
         </div>
-        {/* handleSend is the async POST request to the openAI API */}
-        <form onSubmit={handleSend} className="flex">
+
+        <form
+          onSubmit={handleSend}
+          className="absolute bottom-0 left-0 w-full p-4 flex bg-white border-t"
+        >
           <input
             type="text"
-            className="border p-2 flex-grow"
+            className="border p-2 flex-grow rounded-lg"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
           />
           <button
             type="submit"
-            className="ml-2 px-4 py-2 bg-blue-500 text-white"
+            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
           >
             Send
           </button>
