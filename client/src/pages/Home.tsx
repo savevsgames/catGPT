@@ -1,9 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 import { CatData } from '../interfaces/CatData';
 
 const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
+    const navigate = useNavigate();
+    const handleClick = () => {
+        if (cat) {
+            navigate('/Cat', {state: { cat }});
+        }
+    };
+
     return (
-        <div className="border-2 rounded-lg p-4 flex flex-col items-center">
+        <div className="border-2 rounded-lg p-4 flex flex-col items-center cursor-pointer" onClick={handleClick}>
             {cat ? (
                 <>
                 <img

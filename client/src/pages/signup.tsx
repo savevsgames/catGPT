@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup } from "../api/authAPI";
+import { createUser } from "../api/userAPI";
 import { SignUpData } from "../interfaces/SignUpData";
 import Auth from "../utils/auth";
 
@@ -44,7 +44,7 @@ const Signup: React.FC = () => {
     };
 
     try {
-      const data = await signup(newUser);
+      const data = await createUser(newUser);
       setError("");
       Auth.login(data.token);
       // if successful navigate to login page
