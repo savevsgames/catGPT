@@ -1,9 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 import { CatData } from '../interfaces/CatData';
 
 const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
+    const navigate = useNavigate();
+    const handleClick = () => {
+        if (cat) {
+            navigate('/Cat', {state: { cat }});
+        }
+    };
+
     return (
-        <div className="border-2 rounded-lg p-4 flex flex-col items-center">
+        <div className="border-2 rounded-lg p-4 flex flex-col items-center cursor-pointer bg-color_2" onClick={handleClick}>
             {cat ? (
                 <>
                 <img
@@ -16,8 +24,8 @@ const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
                 </>
             ) : (
                 <div className="flex flex-col items-center">
-                    <div>the cat api image</div>
-                    <button className="py-2 px-4 rounded">
+                    <div className="p-4">the cat api image</div>
+                    <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors">
                         Adopt Me
                     </button>
                 </div>
@@ -64,7 +72,7 @@ const Home: React.FC = () => {
     ];
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-6 bg-color_1 rounded-b-2xl">
             <h1 className="text-2xl font-bold mb-6">Your Adopted Cats</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {Array.from({length: 4}).map((_, index) => {

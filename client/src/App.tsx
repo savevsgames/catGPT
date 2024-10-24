@@ -8,6 +8,8 @@ import Signup from "./pages/signup.tsx";
 import Login from "./pages/Login.tsx";
 import Chat from "./pages/Chat.tsx";
 import Error from "./pages/Error.tsx";
+import Profile from "./pages/Profile.tsx";
+import Cat from "./pages/Cat.tsx";
 
 function Layout() {
   return (
@@ -32,8 +34,8 @@ function App() {
         <Route key-="Login" path="login" element={<Login />} />
         <Route key-="Chat" path="chat" element={<Chat />} />
         <Route key="Home" path="home" element={<Home />} />
-        {/*<Route key-="Profile" path="profile" element={<Profile />} />*/}
-        {/*<Route key-="Cat" path="cat" element={<Cat />} />*/}
+        <Route key-="Profile" path="profile" element={<Profile />} />
+        <Route key-="Cat" path="cat" element={<Cat />} />
         <Route key-="Error" path="*" element={<Error />} />
       </Route>
     </Routes>
