@@ -19,9 +19,10 @@ app.use(routes);
 // Allow cross-origin requests from the frontend for testing because we have a proxy setup in the frontend
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with frontend origin
-    methods: ["GET", "POST"], // Specify allowed methods
-    allowedHeaders: ["Content-Type"],
+    origin: "http://localhost:5173", // Frontend origin on my vite build
+    methods: ["GET", "POST", "PUT", "DELETE"], // If we dont use a method, we shouldnt list it
+    allowedHeaders: ["Content-Type", "Authorization"], // This is the default - if we have auth headers enablded
+    // credentials: true, // Turn on when we get JWT and auth headers goiing
   })
 );
 

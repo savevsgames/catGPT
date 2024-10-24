@@ -117,7 +117,7 @@ export default function Chat() {
               key={index}
               className={`p-3 rounded-lg shadow-md max-w-xs ${
                 msg.sender === "You"
-                  ? "ml-auto bg-color_4 text-color_b"
+                  ? "ml-auto bg-color_5 text-color_0"
                   : "mr-auto bg-color_2 text-color_1"
               }`}
             >
