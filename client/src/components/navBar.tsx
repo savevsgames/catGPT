@@ -1,9 +1,11 @@
 import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import AuthService from '../utils/auth'
+import { useNavigate } from "react-router-dom";
 
 function NavBar() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const navigate = useNavigate();
 
     const checkLoggedIn = () => {
         if (AuthService.loggedIn()) {
@@ -14,6 +16,10 @@ function NavBar() {
     useEffect(() => {
         checkLoggedIn();
     }, [loggedIn]);
+
+    const handleLogin = () => {
+        navigate("/Login");
+    }
 
     const handleLogout = () => {
         AuthService.logout();
@@ -28,10 +34,17 @@ function NavBar() {
                 </Link>
                 <div>
                     {loggedIn ? (
-                        <button className="bg-red-500 text-white px-4 py-2 rounded"
-                                onClick={handleLogout}>Logout</button>
+                        <button 
+                            className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors"
+                            onClick={handleLogout}>
+                                Logout
+                            </button>
                     ) : (
-                        <button className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors">Login</button>
+                        <button 
+                            className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors"
+                            onClick={handleLogin}>
+                                Login
+                            </button>
                         // <button className="bg-yellow-500 text-black px-4 py-2 rounded" onClick={handleLogin}>Login</button>
                     )}
                 </div>
