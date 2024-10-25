@@ -2,6 +2,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import moment from "moment";
+
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { BufferMemory } from "langchain/memory";
@@ -32,7 +34,7 @@ const userAndCatData = {
     {
       id: 1,
       interactionType: "play",
-      interactionDate: new Date("2024-10-22-04:30:08"),
+      interactionDate: new Date("2024-10-22T04:33:08-06:00").toISOString(),
       description: "Played with a /toy from memory/.",
       userId: 1,
       catId: 2,
@@ -40,7 +42,7 @@ const userAndCatData = {
     {
       id: 2,
       interactionType: "feed",
-      interactionDate: new Date("2024-10-22-04:35:33"),
+      interactionDate: new Date("2024-10-22T04:30:08-06:00").toISOString(),
       description: "Fed the cat a /ex. can of tuna./",
       userId: 1,
       catId: 2,
@@ -71,20 +73,25 @@ function initializeMemory(sessionId) {
 }
 
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
-async function prepareChatInputs(userId, catId, userInput) {
-  // There will be an async function called here when the real data is fetched from the database
-  const { user, cat, interactions } = userAndCatData;
+async function prepareChatInputs(user, cat, interactions, userInput) {
+  // Testing the retrieval of interactions data for proper date formatting
+  console.log("Interactions data:", interactions);
 
-  // History of interactions - injected into a string for clean input into the prompt
   const interactionHistory = interactions
-    .map(
-      (interaction) =>
-        `${
-          interaction.interactionType
-        } on ${interaction.interactionDate.toDateString()}: ${
-          interaction.description
-        }`
-    )
+    .map((interaction) => {
+      // For testing the date formatting - will be replaced if/when ISO8601 date type is used in the database
+      const date = new Date(interaction.interactionDate);
+      // If the date.getTime() returns NaN, it means the date is invalid
+      if (isNaN(date.getTime())) {
+        console.error(
+          `Invalid date encountered: ${interaction.interactionDate}`
+        );
+        // Return a string with the interaction type, on Date and description
+        return `${interaction.interactionType} on [Invalid Date]: ${interaction.description}`;
+      }
+      const formattedDate = moment(date).toISOString(); // Convert to ISO format
+      return `${interaction.interactionType} on ${formattedDate}: ${interaction.description}`;
+    })
     .join("\n");
 
   return {
@@ -102,7 +109,7 @@ async function prepareChatInputs(userId, catId, userInput) {
 // timestamp from the AI response and treat them separately
 const responseSchema = z.object({
   content: z.string(),
-  mood: z.number().min(0).max(1), // Mood range
+  mood: z.number().min(0).max(10), // Mood range 0 to 10
   patience: z.number().int().min(0).max(10), // Patience level from 0 to 10
   // Timestamp should be a valid date string - we can use this to sort the chat history
   timestamp: z.string().refine((val) => !isNaN(Date.parse(val)), {
@@ -121,15 +128,43 @@ export async function interactWithCat(req, res) {
 
   // Prepare the chat inputs - this needs real data from SQL queries next using the user
   // and cat IDs to get interactions and catData (mood, patience, etc.)
-  const inputs = await prepareChatInputs(userId, catId, userInput);
+  const inputs = await prepareChatInputs(
+    userAndCatData.user,
+    userAndCatData.cat,
+    userAndCatData.interactions,
+    userInput
+  );
 
   // Define the Prompt Template using the formatted input
+  // The example needs to be in {{ double curly braces }} to be parsed correctly by the prompt template
   const prompt = ChatPromptTemplate.fromTemplate(`
-  You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer. 
-  Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
-  User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
-  Chat History: ${inputs.history}
-  ${inputs.input}
+    You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer.
+    Mood is 0-10 scale, with 0 being angry/sad and 10 being happy/playful. If the interaction is noteworthy, adjust mood +/- by integer values.
+    Your goal is to live a good cat life by interacting with the user. The user can give you food or gifts or play with you. Sometimes you like to play with the gifts you get. 
+    If your mood is low, you may not want to play or eat. If your patience is low, you may not want to interact with the user. Every time you interact
+    with the user, your patience has a chance (% is up to you based and on cat personality) of decreasing by 1. If your patience is 0, you will
+    not interact with the user. If your mood is 0, you will not interact with the user. If you receive a gift, play or food, your mood will increase.  
+  
+    You must respond in the following JSON format:
+    {{
+      "content": "<your message>",
+      "mood": <new mood value between 0 and 10>,
+      "patience": <patience level between 0 and 10>,
+      "timestamp": "<current timestamp in ISO format>"
+    }}
+  
+    Example:
+    {{
+      "content": "Meow! I am happy to see you!",
+      "mood": 9,
+      "patience": 7,
+      "timestamp": "2024-10-25T14:23:55.123Z"
+    }}
+  
+    User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
+    Chat History: ${inputs.history}
+  
+    User Input: ${inputs.input}
   `);
 
   // Format the input prompt using the defined prompt template and defined inputs

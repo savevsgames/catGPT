@@ -4,15 +4,17 @@ import { interactWithCat } from "./langchain-controller.js";
 // import { Cat, User, Interaction } from "../models/index.js";
 
 // Chat interaction endpoint
-export const chatWithCat = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const chatWithCat = async (req: Request, res: Response) => {
+  console.log("Chat request received:", req.body); // Log request body
+
   try {
-    // No need to send a res back, or return to the client because this is "typescript custom middleware" and the end function does that
-    await interactWithCat(req, res);
+    const response = await interactWithCat(req, res); // Get the structured response
+    console.log("Final response to be sent:", response); // Log response
+
+    // Send the response to the frontend
+    return res.status(200).json(response); // Ensure 200 OK response
   } catch (error) {
     console.error("Error interacting with cat:", error);
-    res.status(500).json({ error: "Something went wrong" });
+    return res.status(500).json({ error: "Something went wrong" }); // Handle errors
   }
 };
