@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserLogin } from "../interfaces/UserLogin";
 import { login } from "../api/authAPI";
-
-
+import Auth from "../utils/auth";
 
 const Login: React.FC = () => {
   const [form, setForm] = useState<UserLogin>({ username: "", password: "" });
@@ -11,9 +10,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -31,15 +28,17 @@ const Login: React.FC = () => {
     setError(null);
 
     try {
-        const data = await login(userLoginData);
-        console.log("Login successful:", data);
-        navigate("/home");
-      } catch (err) {
-        console.error("Error:", err);
-        setError("Invalid username or password");
-      } finally {
-        setLoading(false);
-      }
+      const data = await login(userLoginData);
+      setError("");
+      Auth.login(data.token);
+      console.log("Login successful:", data);
+      navigate("/home");
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Invalid username or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
