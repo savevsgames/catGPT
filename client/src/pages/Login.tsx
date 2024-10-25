@@ -29,7 +29,6 @@ const Login: React.FC = () => {
 
     try {
       const data = await login(userLoginData);
-      setError("");
       Auth.login(data.token);
       console.log("Login successful:", data);
       navigate("/home");
