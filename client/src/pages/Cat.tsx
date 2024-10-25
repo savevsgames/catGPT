@@ -28,8 +28,8 @@ const Cat: React.FC = () => {
                     <img src="./assets/nooks/nook1.png" alt="Cat Nook" className="w-full max-h-64 rounded-lg shadow-lg"/>
                     <div className="mt-4 space-x-4">
                         <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors" onClick={handleChatClick}>Chat</button>
-                        <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors">Play</button>
-                        <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors">Feed</button>
+                        {/* <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors">Play</button>
+                        <button className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors">Feed</button> */}
                     </div>
                 </div>
             </div>

@@ -11,7 +11,7 @@ interface Message {
 }
 
 export default function Chat() {
-  //Passed cat data from Home
+  //Passed cat data from Cat
   const location = useLocation();
   const { cat } = location.state as {cat: CatData};
   console.log(cat);

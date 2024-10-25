@@ -35,7 +35,7 @@ function App() {
         <Route key-="Chat" path="chat" element={<Chat />} />
         <Route key="Home" path="home" element={<Home />} />
         <Route key-="Profile" path="profile" element={<Profile />} />
-        <Route key-="Cat" path="cat" element={<Cat />} />
+        <Route key-="Cat" path="/:catName" element={<Cat />} />
         <Route key-="Error" path="*" element={<Error />} />
       </Route>
     </Routes>
