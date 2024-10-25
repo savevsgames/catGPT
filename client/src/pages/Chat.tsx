@@ -25,10 +25,11 @@ const getUserIdFromToken = () => {
 };
 
 export default function Chat() {
-  //Passed cat data from Cat
+  //Passed cat data from home then from Cat
   const location = useLocation();
   const { cat } = location.state as { cat: CatData };
   console.log(cat);
+
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,6 +46,9 @@ export default function Chat() {
     // Add user message to the chat
     setMessages((prev) => [...prev, userMessage]);
 
+    // Debug log before fetch
+    console.log("Sending request...");
+
     try {
       // Use the jwt to get the user id and params to get the cat id
       const res = await fetch("/api/chat/", {
@@ -53,25 +57,31 @@ export default function Chat() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Auth.getToken()}`,
         },
+        // Replace with actual user and cat IDs after tested
         body: JSON.stringify({
           userId: getUserIdFromToken,
           catId: cat.id,
-          input,
+          userInput: input,
         }),
       });
+      // Log the response object for debugging
+      console.log("Response received:", res);
 
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
-
+      // Two example token_id's - should be the same - only the first part is matched!!!!
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTg0NzU3NywiZXhwIjoxNzI5ODU0Nzc3fQ.Exsg4gnvC7nIyd04ikUI3eyhJ9qNRsYcWMj8XXczjIw_cat456
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTg0NTk3MiwiZXhwIjoxNzI5ODUzMTcyfQ.ff1oDGSMhu_thVdygAA4KM3GTKSYEBIp06HOcBX92Yw_cat456
       const data = await res.json();
-
+      console.log("Chat response:", data);
       if (data && data.content) {
         const catMessage: Message = { sender: cat.name, content: data.content };
         // Add cat's response to the chat
         setMessages((prev) => [...prev, catMessage]);
       } else {
         console.error("No content in chat response");
+
       }
     } catch (error) {
       console.error("Error during chat interaction:", error);
