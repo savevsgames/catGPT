@@ -6,15 +6,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { BufferMemory } from "langchain/memory";
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";
+import { StructuredOutputParser } from "Langchain/output_parsers";
 
-// Temporarily using readline for testing the chat - will be replaced with the UI integration
-// import readline from "readline";
-
-// // Set up the readline interface
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
+import { z } from "zod";
 
 // SQL Data Retrieval
 async function getUserAndCatData(userId, catId) {
@@ -133,19 +127,36 @@ export async function interactWithCat(userId, catId, userInput) {
   ${inputs.input}
   `);
 
+  // Set up a zod schema for the response
+  const responseSchema = z.object({
+    content: z.string(),
+    mood: z.number().min(0).max(1), // Mood range
+    patience: z.number().int().min(0).max(10), // Patience level from 0 to 10
+    timestamp: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid timestamp",
+    }),
+  });
+
+  // Initialize the output parser with the response schema
+  const outputParser = new StructuredOutputParser(responseSchema);
+
   // Format the inputs using the defined prompt template
   const formattedInput = await prompt.format(inputs);
 
+  const chain = prompt.pipe(model).pipe(outputParser);
+
   // Invoke the model with the formatted input
-  const response = await model.invoke(formattedInput);
+  const response = await chain.invoke(formattedInput);
 
   // Save the context (user input and AI response) to Redis memory
+  // This is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
   await memory.saveContext({ input: userInput }, { output: response.content });
 
   // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
     content: response.content,
-    mood: inputs.catMood,
+    mood: response.mood,
+    patience: response.patience,
     timestamp: new Date().toISOString(),
   };
 }
