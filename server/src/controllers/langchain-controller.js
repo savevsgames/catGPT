@@ -2,6 +2,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// For ISO8601 date formatting of SQL data in wrong format
 import moment from "moment";
 
 import { ChatOpenAI } from "@langchain/openai";
@@ -14,7 +15,7 @@ import { z } from "zod";
 
 // SQL Data Retrieval
 const userAndCatData = {
-  // We can replace this mock data with actual SQL queries next - its async because it will be a database call
+  // We can replace this mock data with actual SQL queries next
   user: {
     id: 1,
     username: "Greg",
