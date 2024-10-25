@@ -4,16 +4,13 @@ import { interactWithCat } from "./langchain-controller.js";
 // import { Cat, User, Interaction } from "../models/index.js";
 
 // Chat interaction endpoint
-export const chatWithCat = async (req: Request, res: Response) => {
-  const { userId, catId, input } = req.body;
-  //   console.log("userId:", userId); // temporary to get rid of unused variable warning
-  //   console.log("catId:", catId); // temporary to get rid of unused variable warning
-
+export const chatWithCat = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    // const response = await interactWithCat(userId, catId, input);
-    const response = await interactWithCat(userId, catId, input);
-    // This should have the jwt injected into the call every time - session token can pulled from it
-    res.status(200).json(response);
+    // No need to send a res back, or return to the client because this is "typescript custom middleware" and the end function does that
+    await interactWithCat(req, res);
   } catch (error) {
     console.error("Error interacting with cat:", error);
     res.status(500).json({ error: "Something went wrong" });

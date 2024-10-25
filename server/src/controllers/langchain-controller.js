@@ -57,7 +57,7 @@ const model = new ChatOpenAI({
 // Redis chat history setup - now it will take in the sessionId (made of token_id and catId)
 function initializeMemory(sessionId) {
   const upstashMessageHistory = new UpstashRedisChatMessageHistory({
-    sessionId,
+    sessionId, // Now this is being passed in
     config: {
       url: process.env.UPSTASH_REDIS_URL,
       token: process.env.UPSTASH_REST_TOKEN,
@@ -119,8 +119,9 @@ export async function interactWithCat(req, res) {
   // Get the user and cat data, the chat and the token from the request body
   const { userId, catId, userInput, token_id } = req.body;
 
-  // Prepare the chat inputs
-  const inputs = await prepareChatInputs(user, cat, interactions, userInput);
+  // Prepare the chat inputs - this needs real data from SQL queries next using the user
+  // and cat IDs to get interactions and catData (mood, patience, etc.)
+  const inputs = await prepareChatInputs(userId, catId, userInput);
 
   // Define the Prompt Template using the formatted input
   const prompt = ChatPromptTemplate.fromTemplate(`
