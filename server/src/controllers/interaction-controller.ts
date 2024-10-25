@@ -54,19 +54,44 @@ export const getInteractionById = async (req: Request, res: Response) => {
 };
 
 // POST /interactions - create/commit an interaction on a cat
+// export const createInteraction2 = async (req: Request, res: Response) => {
+//   try {
+//     const { interactionType, description, userId, catId } = req.body;
+//     const interaction = await Interaction.create({
+//       interactionType,
+//       description,
+//       interactionDate: new Date(), // automatically sets the date. no user interaction needed for that
+//       userId,
+//       catId,
+//     });
+//     res.status(201).json(interaction);
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// GET- cats/:catId/interaction - interaction for a certain cat
 export const createInteraction = async (req: Request, res: Response) => {
+  console.log("im in");
+  const { interactionType } = req.body;
+  const catId = Number(req.params.catId); // Convert catId from string to number
+  const userId = req.user?.id; // Get userId from the logged-in user (from JWT middleware)
+
+  if (isNaN(catId)) {
+    res.status(400).json({ message: "Invalid cat ID" }); // Handle invalid catId
+  }
+
   try {
-    const { interactionType, description, userId, catId } = req.body;
     const interaction = await Interaction.create({
       interactionType,
-      description,
-      interactionDate: new Date(), // automatically sets the date. no user interaction needed for that
-      userId,
-      catId,
+      catId, // Log the interaction for this specific cat
+      userId, // Log which user is interacting
+      interactionDate: new Date(),
     });
-    res.status(201).json(interaction);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    // logic to control the yarn value
+    res.status(201).json(interaction); // Respond with the logged interaction
+  } catch (error) {
+    res.status(500).json({ error: "Failed to log interaction" });
   }
 };
 
