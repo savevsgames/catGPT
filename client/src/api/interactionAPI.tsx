@@ -1,5 +1,6 @@
 import Auth from "../utils/auth";
 
+
 const createInteraction = async (
   catId: number,
   interactionType: "play" | "gift" | "feed"
