@@ -33,7 +33,7 @@ function App() {
         <Route key="SignUp" path="signup" element={<Signup />} />
         <Route key-="Login" path="login" element={<Login />} />
         <Route key-="Chat" path="chat" element={<Chat />} />
-        <Route key="Home" path="home" element={<Home />} />
+        <Route key="Home" path="home" element={<Home />} /> {/* Page that shows all your cats */}
         <Route key-="Profile" path="profile" element={<Profile />} />
         <Route key-="Cat" path="cat" element={<Cat />} />
         <Route key-="Error" path="*" element={<Error />} />
