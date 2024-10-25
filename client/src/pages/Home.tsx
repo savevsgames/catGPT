@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { CatData } from '../interfaces/CatData';
+import { retrieveUserCats } from '../api/userAPI';
 
 const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
     const navigate = useNavigate();
@@ -17,7 +18,8 @@ const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
                 <img
                     src={cat.avatar}
                     alt={cat.name}
-                    className="w-30 h-30 object-cover rounded-full mb-4"
+                    className="object-contain rounded-full mb-4"
+                    style={{ width: '20rem', height: '20rem' }}
                 />
                 <h3 className="text-xl font-semibold">{cat.name}</h3>
                 <p className="text-gray-900">Mood: {cat.mood}</p>    
@@ -35,41 +37,54 @@ const CatCard: React.FC<{cat?: CatData}> = ({cat}) => {
 }; 
 
 const Home: React.FC = () => {
-    const cats: CatData[] = [
-        {
-            id: 1,
-            name: 'Whiskers',
-            avatar: './assets/adoptMe.png',
-            skin: null,
-            personality: null,
-            mood: 5,
-            deathFlag: null,
-            isAlive: true,
-            userId: 1,
-        },
-        {
-            id: 2,
-            name: 'Tom',
-            avatar: './assets/adoptMe.png',
-            skin: null,
-            personality: null,
-            mood: 5,
-            deathFlag: null,
-            isAlive: true,
-            userId: 2,
-        },
-        {
-            id: 3,
-            name: 'Whiskers',
-            avatar: './assets/adoptMe.png',
-            skin: null,
-            personality: null,
-            mood: 5,
-            deathFlag: null,
-            isAlive: true,
-            userId: 3,
-        },
-    ];
+
+    //this data is for local testing without server use
+    // const cats: CatData[] = [
+    //     {
+    //         id: 1,
+    //         name: 'Whiskers',
+    //         avatar: './assets/adoptMe.png',
+    //         skin: null,
+    //         personality: null,
+    //         mood: 5,
+    //         deathFlag: null,
+    //         isAlive: true,
+    //         userId: 1,
+    //     },
+    //     {
+    //         id: 2,
+    //         name: 'Tom',
+    //         avatar: './assets/cats/cat-gpt-Asset 9.png',
+    //         skin: null,
+    //         personality: null,
+    //         mood: 5,
+    //         deathFlag: null,
+    //         isAlive: true,
+    //         userId: 2,
+    //     },
+    //     {
+    //         id: 3,
+    //         name: 'Whiskers',
+    //         avatar: './assets/cats/cat-gpt-Asset 9.png',
+    //         skin: null,
+    //         personality: null,
+    //         mood: 5,
+    //         deathFlag: null,
+    //         isAlive: true,
+    //         userId: 3,
+    //     },
+    // ];
+
+    const [cats, setCats] = useState<CatData[]>([]);
+
+    useEffect(() => {
+        const fetchCats = async () => {
+            const catsArr = await retrieveUserCats();
+            console.log(catsArr);
+            setCats(catsArr);      
+        };
+        fetchCats();
+    }, []);
 
     return (
         <div className="container mx-auto p-6 bg-color_1 rounded-b-2xl">

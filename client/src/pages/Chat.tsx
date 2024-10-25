@@ -1,5 +1,6 @@
 import { useState, useEffect, FormEvent } from "react";
 import Auth from "../utils/auth";
+import { CatData } from "../interfaces/CatData";
 
 // The message interface will be replaced with the actual message schema once its working in base form
 
@@ -9,6 +10,7 @@ interface Message {
 }
 
 export default function Chat() {
+
   // //Passed cat data from Home?
 
   const [input, setInput] = useState("");
