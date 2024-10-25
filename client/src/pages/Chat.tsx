@@ -65,11 +65,14 @@ export default function Chat() {
       }
 
       const data = await res.json();
-      // Will be replaced with actual cat name in real schema
-      const catMessage: Message = { sender: cat.name, content: data.content };
 
-      // Add cat's response to the chat
-      setMessages((prev) => [...prev, catMessage]);
+      if (data && data.content) {
+        const catMessage: Message = { sender: cat.name, content: data.content };
+        // Add cat's response to the chat
+        setMessages((prev) => [...prev, catMessage]);
+      } else {
+        console.error("No content in chat response");
+      }
     } catch (error) {
       console.error("Error during chat interaction:", error);
     }
