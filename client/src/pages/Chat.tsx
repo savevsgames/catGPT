@@ -1,5 +1,6 @@
 import { useState, useEffect, FormEvent } from "react";
 // import { useLocation } from 'react-router-dom'; //Allows passage of cat info
+import Auth from "../utils/auth";
 
 // The message interface will be replaced with the actual message schema once its working in base form
 
@@ -34,7 +35,10 @@ export default function Chat() {
       // Use the jwt to get the user id and params to get the cat id
       const res = await fetch("/api/chat/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Auth.getToken()}`,
+        },
         body: JSON.stringify({
           userId: "user123", // Replace with real user ID
           catId: "cat456", // Replace with real cat ID

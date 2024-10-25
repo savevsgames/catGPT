@@ -67,7 +67,7 @@ const model = new ChatOpenAI({
 
 // Redis-based Chat History Initialization using Upstash-Redis DB
 const upstashMessageHistory = new UpstashRedisChatMessageHistory({
-  sessionId: "catSession01", // Unique session ID with UUID or similar
+  sessionId: "catSession02", // Unique session ID with UUID or similar
   config: {
     url: process.env.UPSTASH_REDIS_URL,
     token: process.env.UPSTASH_REST_TOKEN,
