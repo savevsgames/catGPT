@@ -36,10 +36,12 @@ export default function Chat() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Auth.getToken()}`,
         },
+        // Replace with actual user and cat IDs after tested
         body: JSON.stringify({
-          userId: "user123", // Replace with real user ID
-          catId: "cat456", // Replace with real cat ID
-          input,
+          userId: "user123",
+          catId: "cat456",
+          userInput: input,
+          token_id: Auth.getToken(),
         }),
       });
 

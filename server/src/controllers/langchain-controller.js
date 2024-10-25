@@ -11,47 +11,42 @@ import { StructuredOutputParser } from "Langchain/output_parsers";
 import { z } from "zod";
 
 // SQL Data Retrieval
-async function getUserAndCatData(userId, catId) {
+const userAndCatData = {
   // We can replace this mock data with actual SQL queries next - its async because it will be a database call
-  const user = {
-    id: userId,
+  user: {
+    id: 1,
     username: "Greg",
     yarn: 100,
     userRole: "standard",
-  };
+  },
 
-  const cat = {
-    id: catId,
+  cat: {
+    id: 2,
     name: "Whiskers",
-    mood: 0.75, // Mood as a number 0-1
+    mood: 5, // Mood as a number 0-10
     personality: "playful, curious, scared of loud noises",
     isAlive: true,
-  };
+  },
 
-  const interactions = [
+  interactions: [
     {
       id: 1,
       interactionType: "play",
       interactionDate: new Date("2024-10-22-04:30:08"),
       description: "Played with a /toy from memory/.",
-      userId: userId,
-      catId: catId,
+      userId: 1,
+      catId: 2,
     },
     {
       id: 2,
       interactionType: "feed",
       interactionDate: new Date("2024-10-22-04:35:33"),
       description: "Fed the cat a /ex. can of tuna./",
-      userId: userId,
-      catId: catId,
+      userId: 1,
+      catId: 2,
     },
-  ];
-
-  return { user, cat, interactions };
-}
-
-// Mock Data - hardcoded for now - will be replaced with state values pulled from the database/clicked on the UI
-const catAndUserData = await getUserAndCatData("user123", "cat456");
+  ],
+};
 
 // Initialize the Chat Model
 const model = new ChatOpenAI({
@@ -59,27 +54,26 @@ const model = new ChatOpenAI({
   temperature: 0.1,
 });
 
-// Redis-based Chat History Initialization using Upstash-Redis DB
-const upstashMessageHistory = new UpstashRedisChatMessageHistory({
-  sessionId: "catSession02", // Unique session ID with UUID or similar
-  config: {
-    url: process.env.UPSTASH_REDIS_URL,
-    token: process.env.UPSTASH_REST_TOKEN,
-  },
-});
+// Redis chat history setup - now it will take in the sessionId (made of token_id and catId)
+function initializeMemory(sessionId) {
+  const upstashMessageHistory = new UpstashRedisChatMessageHistory({
+    sessionId,
+    config: {
+      url: process.env.UPSTASH_REDIS_URL,
+      token: process.env.UPSTASH_REST_TOKEN,
+    },
+  });
 
-// Here is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
-
-// Memory Setup with BufferMemory
-const memory = new BufferMemory({
-  memoryKey: "history",
-  chatHistory: upstashMessageHistory,
-});
+  return new BufferMemory({
+    memoryKey: "history",
+    chatHistory: upstashMessageHistory,
+  });
+}
 
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
 async function prepareChatInputs(userId, catId, userInput) {
-  // This will be async when the real data is fetched from the database
-  const { user, cat, interactions } = await getUserAndCatData(userId, catId);
+  // There will be an async function called here when the real data is fetched from the database
+  const { user, cat, interactions } = userAndCatData;
 
   // History of interactions - injected into a string for clean input into the prompt
   const interactionHistory = interactions
@@ -104,21 +98,31 @@ async function prepareChatInputs(userId, catId, userInput) {
   };
 }
 
-// // Define the Prompt Template
-// const prompt = ChatPromptTemplate.fromTemplate(`
-//   You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer.
-//   Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
-//   User: ${userName}, Cat: ${catName}, Current Mood: ${catMood}, Total Interactions: ${interactionCount}
-//   Chat History: ${history}
-//   ${input}
-//   `);
+// Set up a zod schema for the response - this allows us to pull out the mood, patience, and
+// timestamp from the AI response and treat them separately
+const responseSchema = z.object({
+  content: z.string(),
+  mood: z.number().min(0).max(1), // Mood range
+  patience: z.number().int().min(0).max(10), // Patience level from 0 to 10
+  // Timestamp should be a valid date string - we can use this to sort the chat history
+  timestamp: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid timestamp",
+  }),
+});
+
+// Initialize the output parser with the response schema above
+const outputParser = new StructuredOutputParser(responseSchema);
 
 // Function to Handle the User-Cat Interaction - will be recursively called for each user input in the CLI chat for now
 // Will be replaced with a single call from the UI to the backend API
-export async function interactWithCat(userId, catId, userInput) {
-  const inputs = await prepareChatInputs(userId, catId, userInput);
+export async function interactWithCat(req, res) {
+  // Get the user and cat data, the chat and the token from the request body
+  const { userId, catId, userInput, token_id } = req.body;
 
-  // Define the Prompt Template
+  // Prepare the chat inputs
+  const inputs = await prepareChatInputs(user, cat, interactions, userInput);
+
+  // Define the Prompt Template using the formatted input
   const prompt = ChatPromptTemplate.fromTemplate(`
   You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer. 
   Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
@@ -127,37 +131,38 @@ export async function interactWithCat(userId, catId, userInput) {
   ${inputs.input}
   `);
 
-  // Set up a zod schema for the response
-  const responseSchema = z.object({
-    content: z.string(),
-    mood: z.number().min(0).max(1), // Mood range
-    patience: z.number().int().min(0).max(10), // Patience level from 0 to 10
-    timestamp: z.string().refine((val) => !isNaN(Date.parse(val)), {
-      message: "Invalid timestamp",
-    }),
-  });
-
-  // Initialize the output parser with the response schema
-  const outputParser = new StructuredOutputParser(responseSchema);
-
-  // Format the inputs using the defined prompt template
+  // Format the input prompt using the defined prompt template and defined inputs
   const formattedInput = await prompt.format(inputs);
 
-  const chain = prompt.pipe(model).pipe(outputParser);
+  // Generate a unique sessionId using token_id + '_' + catId
+  const sessionId = `${token_id}_${catId}`;
+
+  // Initialize the memory with the sessionId for the chat history
+  const memory = initializeMemory(sessionId);
+
+  // Still mock data for user and cat
+  // Mock data; replace with SQL queries when ready
+  const { user, cat, interactions } = userAndCatData;
 
   // Invoke the model with the formatted input
-  const response = await chain.invoke(formattedInput);
+  const response = await model.invoke(formattedInput);
+
+  // Parse the response using the output parser
+  const parsedResponse = await outputParser.parse(response.content);
 
   // Save the context (user input and AI response) to Redis memory
   // This is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
-  await memory.saveContext({ input: userInput }, { output: response.content });
+  await memory.saveContext(
+    { input: userInput },
+    { output: parsedResponse.content }
+  );
 
   // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
-    content: response.content,
-    mood: response.mood,
-    patience: response.patience,
-    timestamp: new Date().toISOString(),
+    content: parsedResponse.content,
+    mood: parsedResponse.mood,
+    patience: parsedResponse.patience,
+    timestamp: parsedResponse.timestamp || new Date().toISOString(),
   };
 }
 
