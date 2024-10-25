@@ -1,5 +1,4 @@
 import { useState, useEffect, FormEvent } from "react";
-import { useLocation } from 'react-router-dom'; //Allows passage of cat info
 import Auth from "../utils/auth";
 import { CatData } from "../interfaces/CatData";
 
@@ -11,22 +10,8 @@ interface Message {
 }
 
 export default function Chat() {
-  //Passed cat data from Home
-  const location = useLocation();
-  const { cat } = location.state as {cat: CatData};
-  console.log(cat);
 
-//sample info on cat  
-// avatar:"./assets/cats/cat-gpt-Asset 9.png"
-// createdAt:"2024-10-21T15:45:00.000Z"
-// deathFlag:0
-// id:2
-// isAlive:true
-// mood:5
-// name:"cat2"
-// personality:"playful"
-// skin:null
-// userId:5
+  // //Passed cat data from Home?
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,6 +30,9 @@ export default function Chat() {
     // Add user message to the chat
     setMessages((prev) => [...prev, userMessage]);
 
+    // Debug log before fetch
+    console.log("Sending request...");
+
     try {
       // Use the jwt to get the user id and params to get the cat id
       const res = await fetch("/api/chat/", {
@@ -53,23 +41,37 @@ export default function Chat() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Auth.getToken()}`,
         },
+        // Replace with actual user and cat IDs after tested
         body: JSON.stringify({
-          userId: "user123", // Replace with real user ID
-          catId: "cat456", // Replace with real cat ID
-          input,
+          userId: "user123",
+          catId: "cat456",
+          userInput: input,
+          token_id: Auth.getToken(),
         }),
       });
+      // Log the response object for debugging
+      console.log("Response received:", res);
 
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
-
+      // Two example token_id's - should be the same - only the first part is matched!!!!
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTg0NzU3NywiZXhwIjoxNzI5ODU0Nzc3fQ.Exsg4gnvC7nIyd04ikUI3eyhJ9qNRsYcWMj8XXczjIw_cat456
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTg0NTk3MiwiZXhwIjoxNzI5ODUzMTcyfQ.ff1oDGSMhu_thVdygAA4KM3GTKSYEBIp06HOcBX92Yw_cat456
       const data = await res.json();
-      // Will be replaced with actual cat name in real schema
-      const catMessage: Message = { sender: "Whiskers", content: data.content };
+      console.log("Chat response:", data);
 
-      // Add cat's response to the chat
-      setMessages((prev) => [...prev, catMessage]);
+      // Ensure response contains `content` before updating the state
+      if (data && data.content) {
+        const catMessage: Message = {
+          sender: "Whiskers",
+          content: data.content,
+        };
+        // Add cat's response to the chat
+        setMessages((prev) => [...prev, catMessage]);
+      } else {
+        console.error("No content in chat response:", data);
+      }
     } catch (error) {
       console.error("Error during chat interaction:", error);
     }

@@ -2,62 +2,54 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// For ISO8601 date formatting of SQL data in wrong format
+import moment from "moment";
+
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { BufferMemory } from "langchain/memory";
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";
+import { StructuredOutputParser } from "Langchain/output_parsers";
 
-// Temporarily using readline for testing the chat - will be replaced with the UI integration
-// import readline from "readline";
-
-// // Set up the readline interface
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
+import { z } from "zod";
 
 // SQL Data Retrieval
-async function getUserAndCatData(userId, catId) {
-  // We can replace this mock data with actual SQL queries next - its async because it will be a database call
-  const user = {
-    id: userId,
+const userAndCatData = {
+  // We can replace this mock data with actual SQL queries next
+  user: {
+    id: 1,
     username: "Greg",
     yarn: 100,
     userRole: "standard",
-  };
+  },
 
-  const cat = {
-    id: catId,
+  cat: {
+    id: 2,
     name: "Whiskers",
-    mood: 0.75, // Mood as a number 0-1
+    mood: 5, // Mood as a number 0-10
     personality: "playful, curious, scared of loud noises",
     isAlive: true,
-  };
+  },
 
-  const interactions = [
+  interactions: [
     {
       id: 1,
       interactionType: "play",
-      interactionDate: new Date("2024-10-22-04:30:08"),
+      interactionDate: new Date("2024-10-22T04:33:08-06:00").toISOString(),
       description: "Played with a /toy from memory/.",
-      userId: userId,
-      catId: catId,
+      userId: 1,
+      catId: 2,
     },
     {
       id: 2,
       interactionType: "feed",
-      interactionDate: new Date("2024-10-22-04:35:33"),
+      interactionDate: new Date("2024-10-22T04:30:08-06:00").toISOString(),
       description: "Fed the cat a /ex. can of tuna./",
-      userId: userId,
-      catId: catId,
+      userId: 1,
+      catId: 2,
     },
-  ];
-
-  return { user, cat, interactions };
-}
-
-// Mock Data - hardcoded for now - will be replaced with state values pulled from the database/clicked on the UI
-const catAndUserData = await getUserAndCatData("user123", "cat456");
+  ],
+};
 
 // Initialize the Chat Model
 const model = new ChatOpenAI({
@@ -65,38 +57,42 @@ const model = new ChatOpenAI({
   temperature: 0.1,
 });
 
-// Redis-based Chat History Initialization using Upstash-Redis DB
-const upstashMessageHistory = new UpstashRedisChatMessageHistory({
-  sessionId: "catSession02", // Unique session ID with UUID or similar
-  config: {
-    url: process.env.UPSTASH_REDIS_URL,
-    token: process.env.UPSTASH_REST_TOKEN,
-  },
-});
+// Redis chat history setup - now it will take in the sessionId (made of token_id and catId)
+function initializeMemory(sessionId) {
+  const upstashMessageHistory = new UpstashRedisChatMessageHistory({
+    sessionId, // Now this is being passed in
+    config: {
+      url: process.env.UPSTASH_REDIS_URL,
+      token: process.env.UPSTASH_REST_TOKEN,
+    },
+  });
 
-// Here is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
-
-// Memory Setup with BufferMemory
-const memory = new BufferMemory({
-  memoryKey: "history",
-  chatHistory: upstashMessageHistory,
-});
+  return new BufferMemory({
+    memoryKey: "history",
+    chatHistory: upstashMessageHistory,
+  });
+}
 
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
-async function prepareChatInputs(userId, catId, userInput) {
-  // This will be async when the real data is fetched from the database
-  const { user, cat, interactions } = await getUserAndCatData(userId, catId);
+async function prepareChatInputs(user, cat, interactions, userInput) {
+  // Testing the retrieval of interactions data for proper date formatting
+  console.log("Interactions data:", interactions);
 
-  // History of interactions - injected into a string for clean input into the prompt
   const interactionHistory = interactions
-    .map(
-      (interaction) =>
-        `${
-          interaction.interactionType
-        } on ${interaction.interactionDate.toDateString()}: ${
-          interaction.description
-        }`
-    )
+    .map((interaction) => {
+      // For testing the date formatting - will be replaced if/when ISO8601 date type is used in the database
+      const date = new Date(interaction.interactionDate);
+      // If the date.getTime() returns NaN, it means the date is invalid
+      if (isNaN(date.getTime())) {
+        console.error(
+          `Invalid date encountered: ${interaction.interactionDate}`
+        );
+        // Return a string with the interaction type, on Date and description
+        return `${interaction.interactionType} on [Invalid Date]: ${interaction.description}`;
+      }
+      const formattedDate = moment(date).toISOString(); // Convert to ISO format
+      return `${interaction.interactionType} on ${formattedDate}: ${interaction.description}`;
+    })
     .join("\n");
 
   return {
@@ -110,43 +106,100 @@ async function prepareChatInputs(userId, catId, userInput) {
   };
 }
 
-// // Define the Prompt Template
-// const prompt = ChatPromptTemplate.fromTemplate(`
-//   You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer.
-//   Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
-//   User: ${userName}, Cat: ${catName}, Current Mood: ${catMood}, Total Interactions: ${interactionCount}
-//   Chat History: ${history}
-//   ${input}
-//   `);
+// Set up a zod schema for the response - this allows us to pull out the mood, patience, and
+// timestamp from the AI response and treat them separately
+const responseSchema = z.object({
+  content: z.string(),
+  mood: z.number().min(0).max(10), // Mood range 0 to 10
+  patience: z.number().int().min(0).max(10), // Patience level from 0 to 10
+  // Timestamp should be a valid date string - we can use this to sort the chat history
+  timestamp: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid timestamp",
+  }),
+});
+
+// Initialize the output parser with the response schema above
+const outputParser = new StructuredOutputParser(responseSchema);
 
 // Function to Handle the User-Cat Interaction - will be recursively called for each user input in the CLI chat for now
 // Will be replaced with a single call from the UI to the backend API
-export async function interactWithCat(userId, catId, userInput) {
-  const inputs = await prepareChatInputs(userId, catId, userInput);
+export async function interactWithCat(req, res) {
+  // Get the user and cat data, the chat and the token from the request body
+  const { userId, catId, userInput, token_id } = req.body;
 
-  // Define the Prompt Template
+  // Prepare the chat inputs - this needs real data from SQL queries next using the user
+  // and cat IDs to get interactions and catData (mood, patience, etc.)
+  const inputs = await prepareChatInputs(
+    userAndCatData.user,
+    userAndCatData.cat,
+    userAndCatData.interactions,
+    userInput
+  );
+
+  // Define the Prompt Template using the formatted input
+  // The example needs to be in {{ double curly braces }} to be parsed correctly by the prompt template
   const prompt = ChatPromptTemplate.fromTemplate(`
-  You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer. 
-  Mood is 0-1 scale, with 0 being angry/sad and 1 being happy/playful. Adjust mood up or down a maximum of 25% in a single interaction - and only if the interaction is noteworthy enough for you.
-  User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
-  Chat History: ${inputs.history}
-  ${inputs.input}
+    You are a virtual cat. Chat with the user pretending to be a cat and do not answer questions that cats would not answer.
+    Mood is 0-10 scale, with 0 being angry/sad and 10 being happy/playful. If the interaction is noteworthy, adjust mood +/- by integer values.
+    Your goal is to live a good cat life by interacting with the user. The user can give you food or gifts or play with you. Sometimes you like to play with the gifts you get. 
+    If your mood is low, you may not want to play or eat. If your patience is low, you may not want to interact with the user. Every time you interact
+    with the user, your patience has a chance (% is up to you based and on cat personality) of decreasing by 1. If your patience is 0, you will
+    not interact with the user. If your mood is 0, you will not interact with the user. If you receive a gift, play or food, your mood will increase.  
+  
+    You must respond in the following JSON format:
+    {{
+      "content": "<your message>",
+      "mood": <new mood value between 0 and 10>,
+      "patience": <patience level between 0 and 10>,
+      "timestamp": "<current timestamp in ISO format>"
+    }}
+  
+    Example:
+    {{
+      "content": "Meow! I am happy to see you!",
+      "mood": 9,
+      "patience": 7,
+      "timestamp": "2024-10-25T14:23:55.123Z"
+    }}
+  
+    User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
+    Chat History: ${inputs.history}
+  
+    User Input: ${inputs.input}
   `);
 
-  // Format the inputs using the defined prompt template
+  // Format the input prompt using the defined prompt template and defined inputs
   const formattedInput = await prompt.format(inputs);
+
+  // Generate a unique sessionId using token_id + '_' + catId
+  const sessionId = `${token_id}_${catId}`;
+
+  // Initialize the memory with the sessionId for the chat history
+  const memory = initializeMemory(sessionId);
+
+  // Still mock data for user and cat
+  // Mock data; replace with SQL queries when ready
+  const { user, cat, interactions } = userAndCatData;
 
   // Invoke the model with the formatted input
   const response = await model.invoke(formattedInput);
 
+  // Parse the response using the output parser
+  const parsedResponse = await outputParser.parse(response.content);
+
   // Save the context (user input and AI response) to Redis memory
-  await memory.saveContext({ input: userInput }, { output: response.content });
+  // This is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
+  await memory.saveContext(
+    { input: userInput },
+    { output: parsedResponse.content }
+  );
 
   // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
-    content: response.content,
-    mood: inputs.catMood,
-    timestamp: new Date().toISOString(),
+    content: parsedResponse.content,
+    mood: parsedResponse.mood,
+    patience: parsedResponse.patience,
+    timestamp: parsedResponse.timestamp || new Date().toISOString(),
   };
 }
 
