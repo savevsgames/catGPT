@@ -1,7 +1,11 @@
 import { useState, useEffect, FormEvent } from "react";
-import { useLocation } from 'react-router-dom'; //Allows passage of cat info
+import { useLocation } from "react-router-dom"; //Allows passage of cat info
 import Auth from "../utils/auth";
 import { CatData } from "../interfaces/CatData";
+import { UserData } from "../interfaces/userData";
+import { jwtDecode } from "jwt-decode";
+import { retrieveUser } from "../api/userAPI";
+import { retrieveCat } from "../api/catAPI";
 
 // The message interface will be replaced with the actual message schema once its working in base form
 
@@ -10,33 +14,29 @@ interface Message {
   content: string;
 }
 
+// get the user id from the token
+const getUserIdFromToken = () => {
+  const token = Auth.getToken();
+  if (!token) {
+    return null;
+  }
+  const decoded: { id: number } = jwtDecode(token);
+  return decoded.id;
+};
+
 export default function Chat() {
   //Passed cat data from Cat
   const location = useLocation();
-  const { cat } = location.state as {cat: CatData};
+  const { cat } = location.state as { cat: CatData };
   console.log(cat);
-
-//sample info on cat  
-// avatar:"./assets/cats/cat-gpt-Asset 9.png"
-// createdAt:"2024-10-21T15:45:00.000Z"
-// deathFlag:0
-// id:2
-// isAlive:true
-// mood:5
-// name:"cat2"
-// personality:"playful"
-// skin:null
-// userId:5
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [catData, setCatData] = useState(cat);
 
   // Nook Pictures
   const nookPic = "./assets/nooks/nook4.png";
-
-  // User and Cat Data - Populated through user routing and SQL queries
-  const tempCatName = "Whisky";
-  const tempCatAvatar = "./assets/cats/cat-gpt-Asset 9.png";
 
   const handleSend = async (event: FormEvent) => {
     event.preventDefault(); // Prevent form from refreshing the page
@@ -54,8 +54,8 @@ export default function Chat() {
           Authorization: `Bearer ${Auth.getToken()}`,
         },
         body: JSON.stringify({
-          userId: "user123", // Replace with real user ID
-          catId: "cat456", // Replace with real cat ID
+          userId: getUserIdFromToken,
+          catId: cat.id,
           input,
         }),
       });
@@ -66,7 +66,7 @@ export default function Chat() {
 
       const data = await res.json();
       // Will be replaced with actual cat name in real schema
-      const catMessage: Message = { sender: "Whiskers", content: data.content };
+      const catMessage: Message = { sender: cat.name, content: data.content };
 
       // Add cat's response to the chat
       setMessages((prev) => [...prev, catMessage]);
@@ -110,7 +110,24 @@ export default function Chat() {
 
   useEffect(() => {
     //  Query the SQL for user and cat data - dependency might be interaction history
-  }, []);
+    const fetchData = async () => {
+      const userId = getUserIdFromToken();
+      if (userId) {
+        try {
+          const user = await retrieveUser(userId);
+          console.log("user data:", user);
+          setUserData(user);
+
+          const updatedCat = await retrieveCat(cat.id);
+          console.log("cat data:", updatedCat);
+          setCatData(updatedCat);
+        } catch (error) {
+          console.error("Error retrieving user and cat data:", error);
+        }
+      }
+    };
+    fetchData();
+  }, [cat.id]);
 
   return (
     <div className="flex h-full w-full">
@@ -125,7 +142,7 @@ export default function Chat() {
       >
         {/* Chat Header */}
         <h1 className="text-3xl font-bold text-color_2 underline underline-offset-4 bg-color_1 text-center rounded-md p-2 shadow-2xl shadow-color_4 mb-4">
-          Chat with {tempCatName}
+          Chat with {catData.name}
         </h1>
 
         {/* Chat Messages */}
@@ -134,7 +151,7 @@ export default function Chat() {
             <div
               key={index}
               className={`p-3 rounded-lg shadow-md max-w-xs ${
-                msg.sender === "You"
+                msg.sender === userData?.username
                   ? "ml-auto bg-color_5 text-color_0"
                   : "mr-auto bg-color_2 text-color_1"
               }`}
@@ -145,7 +162,7 @@ export default function Chat() {
         </div>
         {/* The bottom and left or right properties can be adjusted to make the images move a little maybe - post MVP */}
         <img
-          src={tempCatAvatar}
+          src={catData.avatar}
           alt="Cat Avatar"
           className="absolute bottom-24 left-48 max-w-24"
         />
