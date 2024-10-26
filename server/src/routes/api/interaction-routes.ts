@@ -14,6 +14,6 @@ router.get("/", getAllInteractions);
 router.get("/:id", getInteractionById);
 
 // POST /interactions -post an interaction to a specific cat
-router.post("cats/:catId/interaction", createInteraction); // when this route is hit, it means the cat of catId is getting an interaction
+router.post("/:catId", createInteraction); // when this route is hit, it means the cat of catId is getting an interaction
 
 export { router as interactionRouter };
