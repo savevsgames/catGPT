@@ -1,18 +1,19 @@
-import jwtDecode, { JwtPayload } from 'jwt-decode';
+// Function to extract the encoded payload from a JWT token to be used as the long term chat memory token
+// The cat id will be appended to complete the chat memory identifier
 
-// Define a custom payload type for your JWT structure
-interface CustomJWTPayload extends JwtPayload {
-  username: string;
-  id: number;
-}
-
-// Function to extract the payload from the JWT token
-export function extractJWTPayload(token: string): CustomJWTPayload | null {
+export function extractEncodedPayload(token: string): string | null {
   try {
-    const decoded = jwtDecode<CustomJWTPayload>(token);
-    return decoded;
+    const parts = token.split("."); // Split the token into parts.
+
+    // Check if the token has the correct number of parts / is valid.
+    if (parts.length !== 3) {
+      console.error("Invalid token format");
+      return null;
+    }
+    // Return the encoded payload from the token.
+    return parts[1];
   } catch (error) {
-    console.error('Failed to decode token:', error);
+    console.error("Error extracting encoded payload:", error);
     return null;
   }
 }

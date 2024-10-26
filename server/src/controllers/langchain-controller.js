@@ -2,6 +2,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import { extractUser } from "../utils/extractUser";
+
 // For ISO8601 date formatting of SQL data in wrong format
 import moment from "moment";
 
@@ -172,8 +174,11 @@ export async function interactWithCat(req, res) {
   // Format the input prompt using the defined prompt template and defined inputs
   const formattedInput = await prompt.format(inputs);
 
+  // Extract the user "payload" from the jwt token
+  const userHashId = extractUser(token_id);
+
   // Generate a unique sessionId using token_id + '_' + catId
-  const sessionId = `${token_id}_${catId}`;
+  const sessionId = `${userHashId}_${catId}`;
 
   // Initialize the memory with the sessionId for the chat history
   const memory = initializeMemory(sessionId);
