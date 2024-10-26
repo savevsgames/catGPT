@@ -77,6 +77,39 @@ export const createInteraction = async (req: Request, res: Response) => {
   }
 };
 
+// GET -/interactions/lastfive/:catId
+export const getLast5Interactions = async (req: Request, res: Response) => {
+  try {
+    const catId = Number(req.params.catId);
+    const userId = req.user?.id;
+    const fiveInteractions = await Interaction.findAll({
+      include: [
+        {
+          model: User,
+          as: "owner",
+          attributes: ["username"],
+        },
+        {
+          model: Cat,
+          as: "cat",
+          attributes: ["name"],
+        },
+      ],
+      where: { catId, userId },
+      attributes: ["interactionType", "interactionDate"],
+      order: ["interactionDate"],
+      limit: 5,
+    });
+    if (fiveInteractions.length < 5 && fiveInteractions.length > 0) {
+      res.status(200).json(fiveInteractions);
+    } else {
+      res.status(404).json("No interactions were found, feed your cat already");
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // no PUT request needed. I dont think we would be updating an interaction once it's made. at leats it doesnt make sense to me.
 
 // no DELETE request needed, because I dont think it's reasonable to delete an interaction once it's made.
