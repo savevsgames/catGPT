@@ -8,34 +8,48 @@ const Landing = () => {
     "https://picsum.photos/450/300",
     "https://picsum.photos/300/300",
     "https://picsum.photos/350/400",
-    "https://picsum.photos/350/300",
-    "https://picsum.photos/350/300",
-    "https://picsum.photos/300/300",
-    "https://picsum.photos/350/300",
   ];
 
-  const catApiPhotos4 = catApiPhotos.slice(0, 4)
+  const corkboardBackground = "./assets/CorkBoard.png";
+  const adoptionBanner = "./assets/CATGPT-AdoptionBanner.png";
+
+  const catApiPhotos4 = catApiPhotos.slice(0, 4);
 
   // Making a set of coordinates for each picture in the picture array
   const randomPosition = (index: number) => {
-    const edgeLimit = (value: number) => Math.min(Math.max(value,20),80);
-    const randomCoord = () => Math.random() * 60 -5;
+    const edgeLimit = (value: number) => Math.min(Math.max(value, 20), 80);
+    const randomCoord = () => Math.random() * 60 - 5;
     const row = Math.floor(index / 2);
     const col = index % 2;
 
     return {
       top: edgeLimit(randomCoord() + row * 50),
       left: edgeLimit(randomCoord() + col * 50),
-    }
-  }
-  const catApiPercentCoordinates = catApiPhotos.map((_, index) => randomPosition(index));
+    };
+  };
+  const catApiPercentCoordinates = catApiPhotos.map((_, index) =>
+    randomPosition(index)
+  );
 
   return (
-    <div className="relative bg-yellow-100 min-h-screen p-10 flex justify-center items-center">
-      <div className="relative w-full max-w-5xl h-[600px] bg-color_1 rounded-lg shadow-lg overflow-hidden">
+    <div className="relative bg-color_1 min-h-screen p-4 gap-4 flex justify-start items-center -z-30 flex-col">
+      <img
+        src={adoptionBanner}
+        alt="Banner - Cat GPT Adoption Board"
+        className="max-w-5xl margin-auto"
+      />
+      <div className="relative w-full max-w-5xl h-[600px] bg-color_1 rounded-lg -z-20">
+        <img
+          src={corkboardBackground}
+          className="w-full h-full -z-10 relative"
+          alt="Corkboard"
+        />
         {/* Render yarn connections */}
         {catApiPercentCoordinates.map((coordinate, index) => {
-          const nextCoordinate = catApiPercentCoordinates[(index + 1) % catApiPercentCoordinates.length];
+          const nextCoordinate =
+            catApiPercentCoordinates[
+              (index + 1) % catApiPercentCoordinates.length
+            ];
           return (
             <YarnConnection
               key={index}

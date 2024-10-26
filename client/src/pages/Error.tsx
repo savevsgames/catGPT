@@ -1,6 +1,6 @@
-import React from 'react';
+// import notFoundImage from "./assets/CatLady.png"; // Cant seem to find the image after building
 
-const Landing: React.FC = () => {
+const ErrorPage: React.FC = () => {
     return (
         <div className='bg-gray-400 min-h-screen'>
             <img src="assets/CatLady.png" alt="Not found, Cat Lady Error image"/>
@@ -11,4 +11,4 @@ const Landing: React.FC = () => {
     );
 };
 
-export default Landing;
+export default ErrorPage;

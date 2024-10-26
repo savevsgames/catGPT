@@ -11,8 +11,7 @@ const navigate = useNavigate();
 
 const handleChatClick = () => {
     // const catName = cat.name.toLowerCase();
-    //navigate(`/${catName}/Chat`, { state: { cat } });
-    navigate(`/Chat`);
+    navigate(`/Chat`, { state: { cat } });
 };
 
     return (
