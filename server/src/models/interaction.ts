@@ -16,7 +16,7 @@ export class Interaction extends Model<
 > {
   declare id: CreationOptional<number>;
   declare interactionType: "play" | "gift" | "feed"; // defining the possible interaction types
-  declare interactionDate: Date;
+  declare interactionDate: string;
   declare description?: string;
   declare userId: ForeignKey<User["id"]>;
   declare catId: ForeignKey<Cat["id"]>;
@@ -36,7 +36,7 @@ export function InteractionFactory(sequelize: Sequelize) {
         allowNull: false,
       },
       interactionDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING,
         allowNull: false,
         defaultValue: Date.now, // it defaults to the current data/time
       },
