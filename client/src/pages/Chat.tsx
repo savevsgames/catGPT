@@ -7,6 +7,7 @@ import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
 import { useUser } from "../context/UsertContext";
 import { createInteraction } from "../api/interactionAPI";
+import { InteractionData } from "../interfaces/InteractionData";
 
 // The message interface will be replaced with the actual message schema once its working in base form
 
@@ -34,6 +35,7 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [catData, setCatData] = useState(cat);
+  const [interaction, setInteraction] = useState<InteractionData | null>(null);
 
   // Nook Pictures
   const nookPic = "./assets/nooks/nook4.png";
@@ -96,6 +98,7 @@ export default function Chat() {
         console.log({
           data,
         });
+        setInteraction(data);
       } catch (error) {
         console.error("Error handling interaction:", error);
       }
@@ -111,11 +114,11 @@ export default function Chat() {
       if (userId) {
         try {
           const user = await retrieveUser(userId);
-          console.log("user data:", user);
+          console.log("user data from useEffect:", user);
           setUserData(user);
 
           const updatedCat = await retrieveCat(cat.id);
-          console.log("cat data:", updatedCat);
+          console.log("cat data from useEffect:", updatedCat);
           setCatData(updatedCat);
         } catch (error) {
           console.error("Error retrieving user and cat data:", error);
@@ -123,7 +126,7 @@ export default function Chat() {
       }
     };
     fetchData();
-  }, [cat.id]);
+  }, [cat.id, interaction]);
 
   return (
     <div className="flex h-full w-full">

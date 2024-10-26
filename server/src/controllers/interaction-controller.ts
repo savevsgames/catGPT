@@ -3,6 +3,12 @@ import { Interaction, Cat, User } from "../models/index.js";
 
 // GET /interactions - get all types of interactions, include the cat's name, and the user that made that interaction
 
+const interactionCost = {
+  play: 10,
+  feed: 20,
+  gift: 30,
+};
+
 export const getAllInteractions = async (_req: Request, res: Response) => {
   try {
     const interactions = await Interaction.findAll({
@@ -53,13 +59,33 @@ export const getInteractionById = async (req: Request, res: Response) => {
   }
 };
 
-// GET- /:catId/ - interaction for a certain cat
+// creating a getUserById function for the createInteraction
+const getUser = async (userId: number) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      console.error("error getting user");
+    }
+    console.log("getUser function returned this user:", user);
+    return user;
+  } catch (error) {
+    console.error(error, "error getting user");
+    throw error;
+  }
+};
+
+// POST- /:catId/ - commit an interaction on a certain cat
 export const createInteraction = async (req: Request, res: Response) => {
-  const { interactionType, description } = req.body;
+  // interactionType should only be in one of the keys in interactionCost and description should be of type string. Typescript wouldnt want to have any other way.
+
+  const { interactionType, description } = req.body as {
+    interactionType: keyof typeof interactionCost;
+    description: string;
+  };
   const catId = Number(req.params.catId); // Convert catId from string to number
   const userId = req.user?.id; // Get userId from the logged-in user (from JWT middleware)
-  if (isNaN(catId) || userId === null) {
-    res.status(400).json({ message: "Invalid or not found cat or user ID" }); // Handle invalid catId
+  if (isNaN(catId) || userId === undefined) {
+    res.status(400).json({ message: "Invalid or not found cat or user Id" }); // Handle invalid catId
   }
 
   try {
@@ -70,7 +96,13 @@ export const createInteraction = async (req: Request, res: Response) => {
       userId, // Log which user is interacting
       description,
     });
-    // logic to control the yarn value
+    // retrieve user to update yarn
+    const user = await getUser(interaction.userId);
+    if (interaction.interactionType in interactionCost && user) {
+      user.yarn -= interactionCost[interactionType];
+      await user.save();
+    }
+    // send back the interaction response
     res.status(201).json(interaction); // Respond with the logged interaction
   } catch (error) {
     res.status(500).json({ error: "Failed to log interaction" });

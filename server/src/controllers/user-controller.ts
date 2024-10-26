@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../models/index.js";
-import { Cat } from "../models/index.js";
+import { User, Cat } from "../models/index.js";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -26,9 +25,9 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 export const getUserCats = async (req: Request, res: Response) => {
   const userId = req.user?.id; // get the id of the authenticated user through the jwt token
   console.log("userId is", userId); // testing
-if (!userId) {
-  console.log('User not authenticated or not found')
-}
+  if (!userId) {
+    console.log("User not authenticated or not found");
+  }
 
   try {
     const userCats = await Cat.findAll({
