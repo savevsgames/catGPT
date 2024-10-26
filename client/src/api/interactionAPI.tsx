@@ -33,9 +33,25 @@ const createInteraction = async (interactionType: string, catId: number) => {
   }
 };
 
-export { createInteraction };
+// retrieve last 5 interactions
+const retrieveLast5Interactions = async (catId: number) => {
+  try {
+    const response = await fetch(`/api/interactions/lastfive/${catId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
-// get last 5 interactions of that catId and that userId
+    const data = response.json();
+    console.log("last five interactions are", data);
+    return data;
+  } catch (error) {
+    console.log("Error retrieving last five interactions");
+  }
+};
 
-// get the user Id and cat Id with their last 5 interactions.
-// when you do gift the yarn should drop
+export { createInteraction, retrieveLast5Interactions };

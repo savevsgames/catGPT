@@ -15,7 +15,7 @@ const CatCard: React.FC<{ cat?: CatData }> = ({ cat }) => {
     setSelectedCat(cat);
     const catName = cat?.name.toLowerCase().replace(/\s+/g, "-");
     if (cat) {
-      navigate(`/${catName}/Cat`, { state: { cat } });
+      navigate(`/${catName}`, { state: { cat } });
     }
   };
 
@@ -48,28 +48,26 @@ const CatCard: React.FC<{ cat?: CatData }> = ({ cat }) => {
 };
 
 const Home: React.FC = () => {
-
   const [cats, setCats] = useState<CatData[]>([]);
-  const { setUser } = useUser(); 
+  const { setUser } = useUser();
 
   useEffect(() => {
     const fetchCatsAndUser = async () => {
-        const catsArr = await retrieveUserCats();
-        setCats(catsArr);
+      const catsArr = await retrieveUserCats();
+      setCats(catsArr);
 
-        const token = Auth.getToken();
+      const token = Auth.getToken();
 
-        if(!token) {
-            console.log("Unable to find token");
-        } else {
-            const userId: {id: number} = jwtDecode(token);
-            const user = await retrieveUser(userId.id);
-            setUser(user);
-            console.log(user);
-        }
-        
+      if (!token) {
+        console.log("Unable to find token");
+      } else {
+        const userId: { id: number } = jwtDecode(token);
+        const user = await retrieveUser(userId.id);
+        setUser(user);
+        console.log(user);
+      }
     };
-        fetchCatsAndUser();
+    fetchCatsAndUser();
   }, []);
 
   return (
