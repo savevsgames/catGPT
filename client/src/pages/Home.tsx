@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CatData } from "../interfaces/CatData";
-import { retrieveUserCats } from "../api/userAPI";
+import { retrieveUser, retrieveUserCats } from "../api/userAPI";
+import { useUser } from "../context/UsertContext";
+import Auth from "../utils/auth";
+import { jwtDecode } from "jwt-decode";
+import { useCatContext } from "../context/CatContext";
 
 const CatCard: React.FC<{ cat?: CatData }> = ({ cat }) => {
+  const { setSelectedCat } = useCatContext();
   const navigate = useNavigate();
-  const handleClick = () => {
+  const handleClick = (cat: CatData) => {
+    console.log(cat);
+    setSelectedCat(cat);
     const catName = cat?.name.toLowerCase().replace(/\s+/g, "-");
     if (cat) {
-      navigate(`/${catName}`, { state: { cat } });
+      navigate(`/${catName}/Cat`, { state: { cat } });
     }
   };
 
   return (
     <div
       className="border-2 rounded-lg p-4 flex flex-col items-center cursor-pointer bg-color_2"
-      onClick={handleClick}
+      onClick={() => handleClick(cat!)}
     >
       {cat ? (
         <>
@@ -41,52 +48,28 @@ const CatCard: React.FC<{ cat?: CatData }> = ({ cat }) => {
 };
 
 const Home: React.FC = () => {
-  //this data is for local testing without server use
-  // const cats: CatData[] = [
-  //     {
-  //         id: 1,
-  //         name: 'Whiskers',
-  //         avatar: './assets/adoptMe.png',
-  //         skin: null,
-  //         personality: null,
-  //         mood: 5,
-  //         deathFlag: null,
-  //         isAlive: true,
-  //         userId: 1,
-  //     },
-  //     {
-  //         id: 2,
-  //         name: 'Tom',
-  //         avatar: './assets/cats/cat-gpt-Asset 9.png',
-  //         skin: null,
-  //         personality: null,
-  //         mood: 5,
-  //         deathFlag: null,
-  //         isAlive: true,
-  //         userId: 2,
-  //     },
-  //     {
-  //         id: 3,
-  //         name: 'Whiskers',
-  //         avatar: './assets/cats/cat-gpt-Asset 9.png',
-  //         skin: null,
-  //         personality: null,
-  //         mood: 5,
-  //         deathFlag: null,
-  //         isAlive: true,
-  //         userId: 3,
-  //     },
-  // ];
 
   const [cats, setCats] = useState<CatData[]>([]);
+  const { setUser } = useUser(); 
 
   useEffect(() => {
-    const fetchCats = async () => {
-      const catsArr = await retrieveUserCats();
-      console.log(catsArr);
-      setCats(catsArr);
+    const fetchCatsAndUser = async () => {
+        const catsArr = await retrieveUserCats();
+        setCats(catsArr);
+
+        const token = Auth.getToken();
+
+        if(!token) {
+            console.log("Unable to find token");
+        } else {
+            const userId: {id: number} = jwtDecode(token);
+            const user = await retrieveUser(userId.id);
+            setUser(user);
+            console.log(user);
+        }
+        
     };
-    fetchCats();
+        fetchCatsAndUser();
   }, []);
 
   return (

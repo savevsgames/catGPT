@@ -1,18 +1,20 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { CatData } from "../interfaces/CatData";
+import { useNavigate } from "react-router-dom";
+import { useCatContext } from "../context/CatContext";
 
 const Cat: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { cat } = location.state as { cat: CatData };
+const { selectedCat: cat } = useCatContext();
+const navigate = useNavigate();
+    if(!cat) {
+        return <p>no cat found</p>
+    }
 
-  const handleChatClick = () => {
+const handleChatClick = () => {
     const catName = cat.name.toLowerCase();
     navigate(`/${catName}/Chat`, { state: { cat } });
-  };
+};
 
-  return (
+    return (
     <div className="container mx-auto p-6 bg-color_1 rounded-b-2xl">
       <div className="flex mb-6">
         <div className="w-1/4 bg-color_2 rounded-lg p-4 mr-3">
