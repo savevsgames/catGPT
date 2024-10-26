@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { extractUser } from "../utils/extractUser";
+import extractUser from "../utils/extractUser.js";
 
 // For ISO8601 date formatting of SQL data in wrong format
 import moment from "moment";
@@ -78,7 +78,7 @@ function initializeMemory(sessionId) {
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
 async function prepareChatInputs(user, cat, interactions, userInput) {
   // Testing the retrieval of interactions data for proper date formatting
-  console.log("Interactions data:", interactions);
+  // console.log("Interactions data:", interactions);
 
   // Create a string with the 5 most recent SQL interactions between the user and cat
   const interactionHistory = interactions
