@@ -8,8 +8,8 @@ const Cat: React.FC = () => {
   const { cat } = location.state as { cat: CatData };
 
   const handleChatClick = () => {
-    const catName = cat.name.toLowerCase();
-    navigate(`/${catName}/Chat`, { state: { cat } });
+    // const catName = cat.name.toLowerCase();
+    navigate(`/Chat`, { state: { cat } });
   };
 
   return (
