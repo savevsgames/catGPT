@@ -78,6 +78,7 @@ async function prepareChatInputs(user, cat, interactions, userInput) {
   // Testing the retrieval of interactions data for proper date formatting
   console.log("Interactions data:", interactions);
 
+  // Create a string with the 5 most recent SQL interactions between the user and cat
   const interactionHistory = interactions
     .map((interaction) => {
       // For testing the date formatting - will be replaced if/when ISO8601 date type is used in the database
@@ -100,7 +101,7 @@ async function prepareChatInputs(user, cat, interactions, userInput) {
     catName: cat.name,
     userYarn: user.yarn,
     catMood: cat.mood,
-    interactionCount: interactions.length,
+    catPatience: cat.patience,
     input: userInput,
     history: interactionHistory,
   };
@@ -144,7 +145,7 @@ export async function interactWithCat(req, res) {
     Your goal is to live a good cat life by interacting with the user. The user can give you food or gifts or play with you. Sometimes you like to play with the gifts you get. 
     If your mood is low, you may not want to play or eat. If your patience is low, you may not want to interact with the user. Every time you interact
     with the user, your patience has a chance (% is up to you based and on cat personality) of decreasing by 1. If your patience is 0, you will
-    not interact with the user. If your mood is 0, you will not interact with the user. If you receive a gift, play or food, your mood will increase.  
+    not respond kindly. If your mood is 0, you will not respond kindly. If you receive a gift, play or food, your mood will increase.  
   
     You must respond in the following JSON format:
     {{
@@ -162,7 +163,7 @@ export async function interactWithCat(req, res) {
       "timestamp": "2024-10-25T14:23:55.123Z"
     }}
   
-    User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Total Interactions: ${inputs.interactionCount}
+    User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Cat Patience: ${inputs.catPatience} Total Interactions: ${inputs.interactionCount}
     Chat History: ${inputs.history}
   
     User Input: ${inputs.input}
