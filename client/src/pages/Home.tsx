@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CatData } from "../interfaces/CatData";
 import { retrieveUser, retrieveUserCats } from "../api/userAPI";
-import { useUser } from "../context/UsertContext";
+import { useUser } from "../context/UserContext";
 import Auth from "../utils/auth";
 import { jwtDecode } from "jwt-decode";
 import { useCatContext } from "../context/CatContext";

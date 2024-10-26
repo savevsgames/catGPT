@@ -1,9 +1,9 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 import { UserData } from "../interfaces/userData";
 
 interface UserContextType {
     user: UserData | null;
-    setUser: React.Dispatch<React.SetStateAction<UserData | null>>;
+    setUser: Dispatch<SetStateAction<UserData | null>>;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);

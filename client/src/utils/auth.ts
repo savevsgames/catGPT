@@ -9,6 +9,7 @@ class AuthService {
   
   loggedIn() {
     const token = this.getToken();
+    console.log("hi", !!token);
     return !!token;
   }
 

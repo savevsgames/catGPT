@@ -5,7 +5,7 @@ import { UserData } from "../interfaces/userData";
 import { getUserIdFromToken } from "../utils/userToken";
 import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
-import { useUser } from "../context/UsertContext";
+import { useUser } from "../context/UserContext";
 import { createInteraction } from "../api/interactionAPI";
 
 // The message interface will be replaced with the actual message schema once its working in base form
