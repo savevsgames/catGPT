@@ -1,11 +1,11 @@
 import { useState, useEffect, FormEvent } from "react";
-import { useLocation } from "react-router-dom"; //Allows passage of cat info
 import Auth from "../utils/auth";
-import { CatData } from "../interfaces/CatData";
+import { useCatContext } from "../context/CatContext";
 import { UserData } from "../interfaces/userData";
 import { getUserIdFromToken } from "../utils/userToken";
 import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
+import { useUser } from "../context/UsertContext";
 import { createInteraction } from "../api/interactionAPI";
 
 // The message interface will be replaced with the actual message schema once its working in base form
@@ -16,10 +16,19 @@ interface Message {
 }
 
 export default function Chat() {
-  //Passed cat data from home then from Cat
-  const location = useLocation();
-  const { cat } = location.state as { cat: CatData };
-  console.log(cat);
+  const { selectedCat: cat } = useCatContext()
+  if (!cat) {
+    console.log(cat)
+    return
+  }
+
+  const {user: user1 } = useUser()
+  if(!user1) {
+    console.log(`no user found`)
+    return
+  } else {
+    console.log(user1)
+  }
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
