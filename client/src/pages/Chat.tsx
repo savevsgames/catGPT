@@ -5,7 +5,7 @@ import { UserData } from "../interfaces/userData";
 import { getUserIdFromToken } from "../utils/userToken";
 import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
-import { useUser } from "../context/UsertContext";
+import { useUser } from "../context/UserContext";
 import { createInteraction } from "../api/interactionAPI";
 
 // The message interface will be replaced with the actual message schema once its working in base form
@@ -16,18 +16,18 @@ interface Message {
 }
 
 export default function Chat() {
-  const { selectedCat: cat } = useCatContext()
+  const { selectedCat: cat } = useCatContext();
   if (!cat) {
-    console.log(cat)
-    return
+    console.log(cat);
+    return;
   }
 
-  const {user: user1 } = useUser()
-  if(!user1) {
-    console.log(`no user found`)
-    return
+  const { user: user1 } = useUser();
+  if (!user1) {
+    console.log(`no user found`);
+    return;
   } else {
-    console.log(user1)
+    console.log(user1);
   }
 
   const [input, setInput] = useState("");
@@ -89,15 +89,18 @@ export default function Chat() {
   // Function for the play, feed, and gift buttons
   async function handleInteraction(interactionType: string) {
     console.log(`Interaction: ${interactionType}`); // Debugging
-
-    try {
-      const catId = cat.id !== null ? cat.id : 0; // catId must be a number
-      const data = await createInteraction(interactionType, catId);
-      console.log({
-        
-        data})
-    } catch (error) {
-      console.error("Error handling interaction:", error);
+    if (cat !== null) {
+      try {
+        const catId = cat.id !== null ? cat.id : 0; // catId must be a number
+        const data = await createInteraction(interactionType, catId);
+        console.log({
+          data,
+        });
+      } catch (error) {
+        console.error("Error handling interaction:", error);
+      }
+    } else {
+      console.log("Cat is null and cannot handle its interaction");
     }
   }
 

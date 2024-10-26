@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CatData } from "../interfaces/CatData";
 import { retrieveUser, retrieveUserCats } from "../api/userAPI";
-import { useUser } from "../context/UsertContext";
+import { useUser } from "../context/UserContext";
 import Auth from "../utils/auth";
 import { jwtDecode } from "jwt-decode";
 import { useCatContext } from "../context/CatContext";
@@ -15,7 +15,9 @@ const CatCard: React.FC<{ cat?: CatData }> = ({ cat }) => {
     setSelectedCat(cat);
     const catName = cat?.name.toLowerCase().replace(/\s+/g, "-");
     if (cat) {
-      navigate(`/${catName}/Cat`, { state: { cat } });
+      // navigate(`/${catName}/Cat`, { state: { cat } });
+      console.log(catName);
+      navigate(`/Cat`);
     }
   };
 

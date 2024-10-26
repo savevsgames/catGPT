@@ -1,24 +1,25 @@
-import {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthService from '../utils/auth'
-import { useNavigate } from "react-router-dom";
+import { useLoggedIn } from '../context/LoggedInContext';
 
 function NavBar() {
-    const [loggedIn, setLoggedIn] = useState(false);
+    const { loggedIn, setLoggedIn } = useLoggedIn();
+    // const [loggedIn, setLoggedIn] = useState(false);
     const navigate = useNavigate();
 
-    const checkLoggedIn = () => {
-        if (AuthService.loggedIn()) {
-        // if (true) { // Use this line if you want to work on the navBar without having to sign in all the time
-            setLoggedIn(true);
-        } else {
-            setLoggedIn(false);
-        }
-    };
+    // const checkLoggedIn = () => {
+    //     if (AuthService.loggedIn()) {
+    //     // if (true) { // Use this line if you want to work on the navBar without having to sign in all the time
+    //         setLoggedIn(true);
+    //     } else {
+    //         setLoggedIn(false);
+    //     }
+    // };
 
     useEffect(() => {
-        checkLoggedIn();
-    }, []);
+        setLoggedIn(AuthService.loggedIn());
+    }, [setLoggedIn]);
 
     const handleLogin = () => {
         navigate("/Login");
