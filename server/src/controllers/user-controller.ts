@@ -42,6 +42,20 @@ export const getUserCats = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+// helper function: creating a getUserById function for the createInteraction and
+export const getUser = async (userId: number) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      console.error("error getting user");
+    }
+    console.log("getUser function returned this user:", user);
+    return user;
+  } catch (error) {
+    console.error(error, "error getting user");
+    throw error;
+  }
+};
 
 // GET /users/:id - get a user by their id
 export const getUserById = async (req: Request, res: Response) => {
@@ -129,3 +143,32 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// GET /user/:userId/cats -get the count of cats owned by the user
+export const catsOwnedByUser = async (req: Request, res: Response) => {
+  try {
+    // make sure the user id is a number
+    const userId = Number(req.params.id);
+    // find the user using the helper function
+    const user = await getUser(userId);
+    // get the count of cats owned by a user
+    const cats = await Cat.count({
+      where: { userId: user?.id },
+      include: [
+        {
+          model: User,
+          as: "owner",
+          attributes: ["username"],
+        },
+      ],
+    });
+    res.status(200).json(cats);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get /users/:userId/createdAt
+export const getUserCreatedAt = async(req: Request, res: Response) => {
+  
+}

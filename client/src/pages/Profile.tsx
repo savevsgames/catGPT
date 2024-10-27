@@ -1,27 +1,31 @@
 import React from "react";
 import { getUserIdFromToken } from "../utils/userToken";
-import { retrieveUser } from "../api/userAPI";
+import { retrieveUser, retrieveCatCount } from "../api/userAPI";
 import { UserData } from "../interfaces/userData";
 import { useState, useEffect } from "react";
 
 const [userData, setUserData] = useState<UserData | null>(null);
+const [catCount, setCatCount] = useState(0);
 
-  useEffect(() => {
-    //  Query the SQL for user data
-    const fetchData = async () => {
-      const userId = getUserIdFromToken();
-      if (userId) {
-        try {
-          const user = await retrieveUser(userId);
-          console.log("user data from useEffect Profile page:", user);
-          setUserData(user);
-        } catch (error) {
-          console.error("Error retrieving user and cat data:", error);
-        }
+useEffect(() => {
+  //  Query the SQL for user data
+  const fetchData = async () => {
+    const userId = getUserIdFromToken();
+    if (userId) {
+      try {
+        const user = await retrieveUser(userId); //get the user
+        const count = await retrieveCatCount(userId); // get the count of their adoptedcats
+        console.log("user data from useEffect Profile page:", user);
+        console.log("user adopted cats count:", count);
+        setUserData(user);
+        setCatCount(count);
+      } catch (error) {
+        console.error("Error retrieving user and user data:", error);
       }
-      fetchData();
-    };
-  }, []);
+    }
+    fetchData();
+  };
+}, [userData, catCount]);
 
 const Profile: React.FC = () => {
   const mockData = {
@@ -51,14 +55,14 @@ const Profile: React.FC = () => {
     console.log(`username change!`);
   };
 
-
+  // extract the cats count owner
 
   return (
     <div className="container mx-auto p-6 rounded-lg bg-color_1">
       <div className="md:flex md:space-x-6">
         <div className="w-full md:w-1/3 mb-6 md:mb-0">
           <img
-            src={mockData.userAvatar} // we dont have an avatar for the user 
+            src={mockData.userAvatar} // we dont have an avatar for the user
             alt="User Avatar"
             className="w-full h-auto rounded-lg shadow-lg mb-4"
           />
@@ -70,10 +74,10 @@ const Profile: React.FC = () => {
               <strong>Member Since:</strong> {userData?.memberSince}
             </p>
             <p>
-              <strong>Cats Owned:</strong> {userData?.info1}
+              <strong>Cats Owned:</strong> {catCount}
             </p>
             <p>
-              <strong>Info 2:</strong> {userData?.info2}
+              <strong>User role:</strong> {userData?.userRole}
             </p>
           </div>
         </div>

@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
   getUserCats,
+  catsOwnedByUser,
 } from "../../controllers/user-controller.js";
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.put("/:id", updateUser);
 
 //DELETE /users/:id - delete a user by id
 router.delete("/:id", deleteUser);
+
+// number of cats owned by the user
+router.get("/cats", catsOwnedByUser);
 
 export { router as userRouter };

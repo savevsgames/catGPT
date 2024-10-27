@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Interaction, Cat, User } from "../models/index.js";
 import { format } from "date-fns";
+import { getUser } from "./user-controller.js";
 
 // GET /interactions - get all types of interactions, include the cat's name, and the user that made that interaction
 
@@ -57,21 +58,6 @@ export const getInteractionById = async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });
-  }
-};
-
-// creating a getUserById function for the createInteraction
-const getUser = async (userId: number) => {
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      console.error("error getting user");
-    }
-    console.log("getUser function returned this user:", user);
-    return user;
-  } catch (error) {
-    console.error(error, "error getting user");
-    throw error;
   }
 };
 
