@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../models/index.js";
-import { Cat } from "../models/index.js";
+import { User, Cat } from "../models/index.js";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -23,24 +22,50 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 };
 
 // GET all user cats /users/adoptedcats
-export const getUserCats = async (req: Request, res: Response) => {
-  const userId = req.user?.id; // get the id of the authenticated user through the jwt token
+export const getUserCats = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
   console.log("userId is", userId); // testing
-if (!userId) {
-  console.log('User not authenticated or not found')
-}
+  if (!userId) {
+    console.log("User not authenticated or not found");
+    res.status(401).json({ message: "User not authenticated or not found" });
+    return; // Respond immediately if user is not found
+  }
 
   try {
     const userCats = await Cat.findAll({
       where: { userId },
     });
-    if (!userCats || userCats.length === 0) {
-      res.status(401).json("No cats associated with this user");
-    }
 
+    // Check if the user has any cats
+    if (!userCats || userCats.length === 0) {
+      res.status(404).json({ message: "No cats associated with this user" });
+      return;
+    }
+    // Respond with the list of cats if found
     res.status(200).json(userCats);
+    return;
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching user cats:", error); // Log the error for debugging
+    res.status(500).json({ message: error.message }); // Send the error message
+    return;
+  }
+};
+
+// helper function: creating a getUserById function for the createInteraction and
+export const getUser = async (userId: number) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      console.error("error getting user");
+    }
+    console.log("getUser function returned this user:", user);
+    return user;
+  } catch (error) {
+    console.error(error, "error getting user");
+    throw error;
   }
 };
 
@@ -125,6 +150,64 @@ export const deleteUser = async (req: Request, res: Response) => {
     } else {
       await user.destroy();
       res.status(201).json({ message: "User has been deleted" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET /user/:userId/cats -get the count of cats owned by the user
+export const catsOwnedByUser = async (req: Request, res: Response) => {
+  try {
+    // make sure the user id is a number
+    const userId = Number(req.params.id);
+    console.log(userId);
+    // find the user using the helper function
+    const user = await getUser(userId);
+    // get the count of cats owned by a user
+    console.log(user);
+    const cats = await Cat.count({
+      where: { userId: user?.id },
+      include: [
+        {
+          model: User,
+          as: "owner",
+          attributes: ["username"],
+        },
+      ],
+    });
+    console.log(cats);
+    res.status(200).json(cats);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get /users/:userId/createdAt
+export const getUserCreatedAt = async (req: Request, res: Response) => {
+  try {
+    const userId = Number(req.params.id);
+    const user = await User.findOne({
+      attributes: ["createdAt"],
+      where: { id: userId },
+    });
+    if (user) {
+      // Convert `createdAt` to a string in the local time zone
+      const createdAt = new Date(user.get("createdAt") as Date).toLocaleString(
+        "en-US",
+        {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }
+      );
+      res.status(200).json(createdAt);
+    } else {
+      res.status(404).json("User cant be found");
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });

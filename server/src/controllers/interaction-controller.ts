@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
 import { Interaction, Cat, User } from "../models/index.js";
+import { getUser } from "./user-controller.js";
 
 // GET /interactions - get all types of interactions, include the cat's name, and the user that made that interaction
+
+const interactionCost = {
+  play: 10,
+  feed: 20,
+  gift: 30,
+};
 
 export const getAllInteractions = async (_req: Request, res: Response) => {
   try {
@@ -53,24 +60,35 @@ export const getInteractionById = async (req: Request, res: Response) => {
   }
 };
 
-// GET- /:catId/ - interaction for a certain cat
+// POST- /:catId/ - commit an interaction on a certain cat
 export const createInteraction = async (req: Request, res: Response) => {
-  const { interactionType, description } = req.body;
+  // interactionType should only be in one of the keys in interactionCost and description should be of type string. Typescript wouldnt want to have any other way.
+
+  const { interactionType, description } = req.body as {
+    interactionType: keyof typeof interactionCost;
+    description: string;
+  };
   const catId = Number(req.params.catId); // Convert catId from string to number
   const userId = req.user?.id; // Get userId from the logged-in user (from JWT middleware)
-  if (isNaN(catId) || userId === null) {
-    res.status(400).json({ message: "Invalid or not found cat or user ID" }); // Handle invalid catId
+  if (isNaN(catId) || userId === undefined) {
+    res.status(400).json({ message: "Invalid or not found cat or user Id" }); // Handle invalid catId
   }
 
   try {
     const interaction = await Interaction.create({
       interactionType,
-      interactionDate: new Date(),
+      interactionDate: new Date().toISOString(),
       catId, // Log the interaction for this specific cat
       userId, // Log which user is interacting
       description,
     });
-    // logic to control the yarn value
+    // retrieve user to update yarn
+    const user = await getUser(interaction.userId);
+    if (interaction.interactionType in interactionCost && user) {
+      user.yarn -= interactionCost[interactionType];
+      await user.save();
+    }
+    // send back the interaction response
     res.status(201).json(interaction); // Respond with the logged interaction
   } catch (error) {
     res.status(500).json({ error: "Failed to log interaction" });

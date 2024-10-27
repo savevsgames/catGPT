@@ -58,9 +58,9 @@ async function formatChatPrompt(
   const interactionHistory = interactions
     .map(
       (interaction) =>
-        `${
-          interaction.interactionType
-        } on ${interaction.interactionDate.toISOString()}`
+        `${interaction.interactionType} on ${new Date(
+          interaction.interactionDate
+        ).toISOString()}`
     )
     .join(", ");
 
@@ -128,7 +128,7 @@ async function saveInteraction(
       catId,
       interactionType,
       description: summary,
-      interactionDate: new Date(),
+      interactionDate: new Date().toISOString(),
     });
 
     // If new mood is included, update the cat's mood - not implemented yet

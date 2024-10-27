@@ -1,62 +1,118 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { getUserIdFromToken } from "../utils/userToken";
+import {
+  retrieveUser,
+  retrieveCatCount,
+  retrieveUserCreatedAt,
+} from "../api/userAPI";
+import { UserData } from "../interfaces/userData";
 
 const Profile: React.FC = () => {
-    const mockData = {
-        userId: 1,
-        userAvatar: "https://picsum.photos/350/300",
-        catAvatar: "https://picsum.photos/300/300",
-        username: "Cat Lady",
-        bio: "Love cats. ????", 
-        yarn: 100,
-        memberSince: "November 2024",
-        info1: "Gold Member",
-        info2: "What should go here?"       
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [catCount, setCatCount] = useState(0);
+  const [memberSince, setMemberSince] = useState<string>("");
+  const [randomUserImage, setRandomUserImage] = useState<string>(""); // State for random user image
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = getUserIdFromToken();
+      if (userId) {
+        try {
+          setLoading(true);
+          setError(null);
+
+          const user = await retrieveUser(userId);
+          const count = await retrieveCatCount(userId);
+          const createdAt = await retrieveUserCreatedAt(userId);
+          const createdAtFormatted = createdAt.split(',')[0];
+
+          setUserData(user);
+          setCatCount(count);
+          setMemberSince(createdAtFormatted);
+
+          const style = "avataaars"; // Customize as needed
+          setRandomUserImage(
+            `https://api.dicebear.com/6.x/${style}/svg?seed=${userId}`
+          );
+        } catch (error) {
+          console.error("Error retrieving user data:", error);
+          setError("Failed to retrieve user data");
+        } finally {
+          setLoading(false);
+        }
+      }
     };
 
-    //password change call, will change to api call
-    const handleChangePassword = () => {
-        alert(`password change!`);
-    };
+    fetchData();
+  }, []);
 
-    //bio change call, will change to api call
-    const handleChangeBio = () => {
-        console.log(`bio change!`);
-    };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    //username change call, will change to api call
-    const handleChangeUsername = () => {
-        console.log(`username change!`);
-    }
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-    return (
-        <div className="container mx-auto p-6 rounded-lg bg-color_1">
-            <div className="md:flex md:space-x-6">
-                <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                    <img src={mockData.userAvatar} alt="User Avatar" className="w-full h-auto rounded-lg shadow-lg mb-4"/>
-                    <div className="p-4 rounded-lg shadow bg-color_2">
-                        <p><strong>Yarn:</strong> {mockData.yarn}</p>
-                        <p><strong>Member Since:</strong> {mockData.memberSince}</p>
-                        <p><strong>Info 1:</strong> {mockData.info1}</p>
-                        <p><strong>Info 2:</strong> {mockData.info2}</p>
-                    </div>
-                </div>
-                <div className="w-full md:w-2/3">
-                    <div className="p-6 rounded-lg shadow-lg mb-6 bg-color_2">
-                        <h1 className="text-2xl font-semibold mb-2 bg-">{mockData.username}</h1>
-                        <p><strong>Bio:</strong> {mockData.bio}</p>
-                    </div>
-                    <div className="space-x-0 space-y-4 md:space-y-4 md:space-x-4">
-                        <button onClick={handleChangePassword} className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors md:w-auto">
-                            Change Password</button>
-                        <button onClick={handleChangeBio} className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto">
-                            Change Bio</button>
-                        <button onClick={handleChangeUsername} className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto">
-                            Change Username</button>
-                    </div>
-                </div>
-            </div>    
+  return (
+    <div className="container mx-auto p-6 rounded-lg bg-color_1">
+      <div className="md:flex md:space-x-6">
+        <div className="w-full md:w-1/3 mb-6 md:mb-0">
+          <img
+            src={randomUserImage} // Use the fetched random user image
+            alt="User Avatar"
+            className="w-full h-auto rounded-lg shadow-lg mb-4"
+          />
+          <div className="p-4 rounded-lg shadow bg-color_2">
+            <p>
+              <strong>Yarn:</strong> {userData?.yarn}
+            </p>
+            <p>
+              <strong>Member Since:</strong> {memberSince || "Loading..."}
+            </p>
+            <p>
+              <strong>Cats Owned:</strong> {catCount}
+            </p>
+            <p>
+              <strong>User Role:</strong> {userData?.userRole || "Loading..."}
+            </p>
+          </div>
         </div>
-    )
-}
+        <div className="w-full md:w-2/3">
+          <div className="p-6 rounded-lg shadow-lg mb-6 bg-color_2">
+            <h1 className="text-2xl font-semibold mb-2">
+              Hi {userData?.username}
+            </h1>
+            <p>
+              <strong>Bio:</strong> {userData?.bio}
+            </p>
+          </div>
+          <div className="space-x-0 space-y-4 md:space-y-4 md:space-x-4">
+            <button
+              onClick={() => alert("Password change!")}
+              className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors md:w-auto"
+            >
+              Change Password
+            </button>
+            <button
+              onClick={() => console.log("Bio change!")}
+              className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
+            >
+              Change Bio
+            </button>
+            <button
+              onClick={() => console.log("Username change!")}
+              className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
+            >
+              Change Username
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Profile;
