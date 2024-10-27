@@ -14,14 +14,18 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     });
     console.log(user);
     if (!user) {
-      return res.status(401).json({ message: "Authentication Failed" });
+      return res
+        .status(401)
+        .json({ message: "Authentication Failed, wrong username" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       console.log(password);
       console.log(user.password);
-      return res.status(401).json({ message: "Authentication Failed" });
+      return res
+        .status(401)
+        .json({ message: "Authentication Failed, wrong password" });
     }
 
     const secretKey = process.env.JWT_SECRET_KEY || "";
@@ -69,7 +73,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
     if (!secretKey) {
       return res.status(500).json({ message: "JWT Secret key not configured" });
     }
-
+    
     const token = jwt.sign({ username }, secretKey, { expiresIn: "2h" });
 
     return res.status(201).json({

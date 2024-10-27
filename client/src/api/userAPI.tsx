@@ -148,11 +148,12 @@ const retrieveCatCount = async (id: number) => {
         Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
-    const data = response.json();
-    console.log("number of cats is", data);
+    const data = await response.json();
+
     if (!response.ok) {
       throw new Error("Invalid API response");
     }
+    console.log("number of cats is", data);
     return data;
   } catch (error) {
     console.log("Error retrieving cats count", error);
@@ -171,7 +172,7 @@ const retrieveUserCreatedAt = async (id: number) => {
     if (!response.ok) {
       throw new Error("Invalid API response");
     }
-    const data = response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.log("Error retrieving cats count", error);

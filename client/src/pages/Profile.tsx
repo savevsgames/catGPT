@@ -12,62 +12,57 @@ const Profile: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [catCount, setCatCount] = useState(0);
   const [memberSince, setMemberSince] = useState<string>("");
+  const [randomUserImage, setRandomUserImage] = useState<string>(""); // State for random user image
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const userId = getUserIdFromToken();
       if (userId) {
         try {
-          const user = await retrieveUser(userId); // get user data
-          console.log("User data from Profile page:", user);
+          setLoading(true);
+          setError(null);
 
-          const count = await retrieveCatCount(userId); // get count of adopted cats
-          console.log("User adopted cats count:", count);
-
-          const createdAt = await retrieveUserCreatedAt(userId); // get member since date
+          const user = await retrieveUser(userId);
+          const count = await retrieveCatCount(userId);
+          const createdAt = await retrieveUserCreatedAt(userId);
           const createdAtFormatted = format(new Date(createdAt), "MMMM yyyy");
 
-          console.log("Formatted Member Since:", createdAtFormatted);
-
           setUserData(user);
-
           setCatCount(count);
-
           setMemberSince(createdAtFormatted);
+
+          // Fetch a random user image
+          const response = await fetch("https://randomuser.me/api/");
+          const data = await response.json();
+          setRandomUserImage(data.results[0].picture.large); // Get the large picture
         } catch (error) {
           console.error("Error retrieving user data:", error);
+          setError("Failed to retrieve user data");
+        } finally {
+          setLoading(false);
         }
       }
     };
 
     fetchData();
-  }, [userData, catCount, memberSince]); // no dependencies set yet
+  }, []);
 
-  // Additional effect to log updated state values after they've changed
-  useEffect(() => {
-    console.log("Updated userData:", userData);
-    console.log("Updated catCount:", catCount);
-    console.log("Updated memberSince:", memberSince);
-  }, [userData, catCount, memberSince]);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const handleChangePassword = () => {
-    alert(`Password change!`);
-  };
-
-  const handleChangeBio = () => {
-    console.log(`Bio change!`);
-  };
-
-  const handleChangeUsername = () => {
-    console.log(`Username change!`);
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="container mx-auto p-6 rounded-lg bg-color_1">
       <div className="md:flex md:space-x-6">
         <div className="w-full md:w-1/3 mb-6 md:mb-0">
           <img
-            src="https://picsum.photos/350/300" // Replace with user avatar if available
+            src={randomUserImage} // Use the fetched random user image
             alt="User Avatar"
             className="w-full h-auto rounded-lg shadow-lg mb-4"
           />
@@ -79,7 +74,7 @@ const Profile: React.FC = () => {
               <strong>Member Since:</strong> {memberSince || "Loading..."}
             </p>
             <p>
-              <strong>Cats Owned:</strong> {catCount || "Loading..."}
+              <strong>Cats Owned:</strong> {catCount}
             </p>
             <p>
               <strong>User Role:</strong> {userData?.userRole || "Loading..."}
@@ -97,19 +92,19 @@ const Profile: React.FC = () => {
           </div>
           <div className="space-x-0 space-y-4 md:space-y-4 md:space-x-4">
             <button
-              onClick={handleChangePassword}
+              onClick={() => alert("Password change!")}
               className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Password
             </button>
             <button
-              onClick={handleChangeBio}
+              onClick={() => console.log("Bio change!")}
               className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Bio
             </button>
             <button
-              onClick={handleChangeUsername}
+              onClick={() => console.log("Username change!")}
               className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Username

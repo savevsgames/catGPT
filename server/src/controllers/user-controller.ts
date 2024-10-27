@@ -23,26 +23,38 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 };
 
 // GET all user cats /users/adoptedcats
-export const getUserCats = async (req: Request, res: Response) => {
-  const userId = req.user?.id; // get the id of the authenticated user through the jwt token
+export const getUserCats = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
   console.log("userId is", userId); // testing
   if (!userId) {
     console.log("User not authenticated or not found");
+    res.status(401).json({ message: "User not authenticated or not found" });
+    return; // Respond immediately if user is not found
   }
 
   try {
     const userCats = await Cat.findAll({
       where: { userId },
     });
-    if (!userCats || userCats.length === 0) {
-      res.status(401).json("No cats associated with this user");
-    }
 
+    // Check if the user has any cats
+    if (!userCats || userCats.length === 0) {
+      res.status(404).json({ message: "No cats associated with this user" });
+      return;
+    }
+    // Respond with the list of cats if found
     res.status(200).json(userCats);
+    return;
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching user cats:", error); // Log the error for debugging
+    res.status(500).json({ message: error.message }); // Send the error message
+    return;
   }
 };
+
 // helper function: creating a getUserById function for the createInteraction and
 export const getUser = async (userId: number) => {
   try {
