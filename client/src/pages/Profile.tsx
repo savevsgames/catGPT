@@ -6,7 +6,6 @@ import {
   retrieveUserCreatedAt,
 } from "../api/userAPI";
 import { UserData } from "../interfaces/userData";
-import { format } from "date-fns";
 
 const Profile: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -27,11 +26,10 @@ const Profile: React.FC = () => {
           const user = await retrieveUser(userId);
           const count = await retrieveCatCount(userId);
           const createdAt = await retrieveUserCreatedAt(userId);
-          const createdAtFormatted = format(new Date(createdAt), "MMMM yyyy");
 
           setUserData(user);
           setCatCount(count);
-          setMemberSince(createdAtFormatted);
+          setMemberSince(createdAt);
 
           const style = "avataaars"; // Customize as needed
           setRandomUserImage(
@@ -84,7 +82,7 @@ const Profile: React.FC = () => {
         <div className="w-full md:w-2/3">
           <div className="p-6 rounded-lg shadow-lg mb-6 bg-color_2">
             <h1 className="text-2xl font-semibold mb-2">
-              {userData?.username}
+              Hi {userData?.username}
             </h1>
             <p>
               <strong>Bio:</strong> {userData?.bio}

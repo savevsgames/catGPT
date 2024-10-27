@@ -116,6 +116,7 @@ export default function Chat() {
           const user = await retrieveUser(userId);
           console.log("user data from useEffect:", user);
           setUserData(user);
+          console.log(userData);
 
           const updatedCat = await retrieveCat(cat.id);
           console.log("cat data from useEffect:", updatedCat);
@@ -150,7 +151,7 @@ export default function Chat() {
             <div
               key={index}
               className={`p-3 rounded-lg shadow-md max-w-xs ${
-                msg.sender === userData?.username
+                msg.sender === "You"
                   ? "ml-auto bg-color_5 text-color_0"
                   : "mr-auto bg-color_2 text-color_1"
               }`}

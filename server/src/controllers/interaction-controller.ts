@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Interaction, Cat, User } from "../models/index.js";
-import { format } from "date-fns";
 import { getUser } from "./user-controller.js";
 
 // GET /interactions - get all types of interactions, include the cat's name, and the user that made that interaction
@@ -78,7 +77,7 @@ export const createInteraction = async (req: Request, res: Response) => {
   try {
     const interaction = await Interaction.create({
       interactionType,
-      interactionDate: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+      interactionDate: new Date().toISOString(),
       catId, // Log the interaction for this specific cat
       userId, // Log which user is interacting
       description,

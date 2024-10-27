@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { User, Cat } from "../models/index.js";
-import { format } from "date-fns";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -193,9 +192,8 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
       where: { id: userId },
     });
     if (user) {
-      const createdAt = user.get("createdAt") as Date;
-      const memberSince = format(createdAt, "yyyy-mm-hh hh:mm:ss");
-      res.status(200).json(memberSince);
+      // access createdAt directly from the user
+      res.status(200).json({ createdAt: user.get("createdAt") });
     } else {
       res.status(404).json("User cant be found");
     }

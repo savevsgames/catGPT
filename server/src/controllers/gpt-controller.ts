@@ -7,7 +7,6 @@ import {
   UserChatRequest,
   CatProfile,
 } from "../interfaces/gpt-interfaces";
-import { format } from "date-fns";
 
 // import models for database operations so we can test the chat interactions - prolly change this to use sequelize endpoints
 // import { User } from "../models/user.js";
@@ -59,10 +58,9 @@ async function formatChatPrompt(
   const interactionHistory = interactions
     .map(
       (interaction) =>
-        `${interaction.interactionType} on ${format(
-          interaction.interactionDate,
-          "yyyy-MM-dd HH:mm:ss"
-        )}`
+        `${interaction.interactionType} on ${new Date(
+          interaction.interactionDate
+        ).toISOString()}`
     )
     .join(", ");
 
