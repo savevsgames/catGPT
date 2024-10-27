@@ -26,10 +26,11 @@ const Profile: React.FC = () => {
           const user = await retrieveUser(userId);
           const count = await retrieveCatCount(userId);
           const createdAt = await retrieveUserCreatedAt(userId);
+          const createdAtFormatted = createdAt.split(',')[0];
 
           setUserData(user);
           setCatCount(count);
-          setMemberSince(createdAt);
+          setMemberSince(createdAtFormatted);
 
           const style = "avataaars"; // Customize as needed
           setRandomUserImage(
