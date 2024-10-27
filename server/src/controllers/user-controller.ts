@@ -240,7 +240,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      updatedUser.username = password;
+      updatedUser.password = password;
 
       await updatedUser.save();
 
@@ -258,7 +258,7 @@ export const updateUserBio = async (req: Request, res: Response) => {
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      updatedUser.username = bio;
+      updatedUser.bio = bio;
 
       await updatedUser.save();
 
