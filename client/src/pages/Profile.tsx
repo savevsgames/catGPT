@@ -33,10 +33,10 @@ const Profile: React.FC = () => {
           setCatCount(count);
           setMemberSince(createdAtFormatted);
 
-          // Fetch a random user image
-          const response = await fetch("https://randomuser.me/api/");
-          const data = await response.json();
-          setRandomUserImage(data.results[0].picture.large); // Get the large picture
+          const style = "avataaars"; // Customize as needed
+          setRandomUserImage(
+            `https://api.dicebear.com/6.x/${style}/svg?seed=${userId}`
+          );
         } catch (error) {
           console.error("Error retrieving user data:", error);
           setError("Failed to retrieve user data");
