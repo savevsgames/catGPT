@@ -4,9 +4,9 @@ import {
   retrieveUser,
   retrieveCatCount,
   retrieveUserCreatedAt,
-  // updateUserBio,
+  updateUserBio,
   updateUserPassword,
-  // updateUserUsername,
+  updateUserUsername,
 } from "../api/userAPI";
 import { UserData } from "../interfaces/userData";
 
@@ -73,6 +73,47 @@ const Profile: React.FC = () => {
     }
   };
 
+  // function to handle username Change
+  const handleUsernameChange = async () => {
+    const userId = getUserIdFromToken();
+    const newUsername = prompt("Enter your new username");
+    if (!userId) {
+      return console.log("userId not found");
+    }
+    if (newUsername) {
+      try {
+        await updateUserUsername(userId, newUsername);
+        setUserData((prevData) =>
+          prevData ? { ...prevData, username: newUsername } : null
+        );
+        alert("username updated successfully");
+      } catch (error) {
+        console.error("error updating username", error);
+        alert("Failed to update username");
+      }
+    }
+  };
+
+  // function to handle username Change
+  const handleBioChange = async () => {
+    const userId = getUserIdFromToken();
+    const newbio = prompt("Enter your new bio");
+    if (!userId) {
+      return console.log("userId not found");
+    }
+    if (newbio) {
+      try {
+        await updateUserBio(userId, newbio);
+        setUserData((prevData) =>
+          prevData ? { ...prevData, bio: newbio } : null
+        );
+        alert("bio updated successfully");
+      } catch (error) {
+        console.error("error updating bio", error);
+        alert("Failed to update bio");
+      }
+    }
+  };
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -122,13 +163,13 @@ const Profile: React.FC = () => {
               Change Password
             </button>
             <button
-              onClick={() => console.log("Bio change!")}
+              onClick={handleBioChange}
               className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Bio
             </button>
             <button
-              onClick={() => console.log("Username change!")}
+              onClick={handleUsernameChange}
               className="ml-2 px-4 py-2 bg-color_3 text-white rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Username

@@ -225,7 +225,7 @@ export const updateUserUsername = async (req: Request, res: Response) => {
 
       await updatedUser.save();
 
-      res.status(201).json(updatedUser);
+      res.status(200).json({ message: "Username updated successfully" });
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -244,7 +244,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
       await updatedUser.save();
 
-      res.status(201).json(updatedUser);
+      res.status(200).json({ message: "Password updated successfully" });
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -262,7 +262,7 @@ export const updateUserBio = async (req: Request, res: Response) => {
 
       await updatedUser.save();
 
-      res.status(201).json(updatedUser);
+      res.status(200).json({ message: "Bio updated successfully" });
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message });

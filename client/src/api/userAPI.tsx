@@ -182,7 +182,7 @@ const retrieveUserCreatedAt = async (id: number) => {
 
 const updateUserUsername = async (
   id: number,
-  body: string
+  newUsername: string
 ): Promise<UserData> => {
   try {
     const response = await fetch(`/api/users/${id}/username`, {
@@ -191,7 +191,7 @@ const updateUserUsername = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${Auth.getToken()}`,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ newUsername }),
     });
 
     const data = await response.json();
@@ -233,7 +233,7 @@ const updateUserPassword = async (
     return Promise.reject("Could not fetch user by id");
   }
 };
-const updateUserBio = async (id: number, body: string): Promise<UserData> => {
+const updateUserBio = async (id: number, newBio: string): Promise<UserData> => {
   try {
     const response = await fetch(`/api/users/${id}/bio`, {
       method: "PUT",
@@ -241,7 +241,7 @@ const updateUserBio = async (id: number, body: string): Promise<UserData> => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Auth.getToken()}`,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ newBio }),
     });
 
     const data = await response.json();
