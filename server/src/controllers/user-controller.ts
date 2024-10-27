@@ -192,8 +192,20 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
       where: { id: userId },
     });
     if (user) {
-      // access createdAt directly from the user
-      res.status(200).json({ createdAt: user.get("createdAt") });
+      // Convert `createdAt` to a string in the local time zone
+      const createdAt = new Date(user.get("createdAt") as Date).toLocaleString(
+        "en-US",
+        {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }
+      );
+      res.status(200).json(createdAt);
     } else {
       res.status(404).json("User cant be found");
     }
