@@ -213,3 +213,58 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+// PUT /user/:id/username - update a user's username by id
+export const updateUserUsername = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.body;
+    const updatedUser = await User.findByPk(req.params.id);
+    if (!updatedUser) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      updatedUser.username = username;
+
+      await updatedUser.save();
+
+      res.status(201).json(updatedUser);
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// PUT /user/:id/password - update user's password by id
+export const updateUserPassword = async (req: Request, res: Response) => {
+  try {
+    const { password } = req.body;
+    const updatedUser = await User.findByPk(req.params.id);
+    if (!updatedUser) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      updatedUser.username = password;
+
+      await updatedUser.save();
+
+      res.status(201).json(updatedUser);
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// PUT /user/:id/bio - update user's bio by id
+export const updateUserBio = async (req: Request, res: Response) => {
+  try {
+    const { bio } = req.body;
+    const updatedUser = await User.findByPk(req.params.id);
+    if (!updatedUser) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      updatedUser.username = bio;
+
+      await updatedUser.save();
+
+      res.status(201).json(updatedUser);
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

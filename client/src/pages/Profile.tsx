@@ -4,6 +4,9 @@ import {
   retrieveUser,
   retrieveCatCount,
   retrieveUserCreatedAt,
+  // updateUserBio,
+  updateUserPassword,
+  // updateUserUsername,
 } from "../api/userAPI";
 import { UserData } from "../interfaces/userData";
 
@@ -15,6 +18,7 @@ const Profile: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // useEffect to load the user;s data
   useEffect(() => {
     const fetchData = async () => {
       const userId = getUserIdFromToken();
@@ -26,7 +30,7 @@ const Profile: React.FC = () => {
           const user = await retrieveUser(userId);
           const count = await retrieveCatCount(userId);
           const createdAt = await retrieveUserCreatedAt(userId);
-          const createdAtFormatted = createdAt.split(',')[0];
+          const createdAtFormatted = createdAt.split(",")[0];
 
           setUserData(user);
           setCatCount(count);
@@ -47,6 +51,27 @@ const Profile: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // function to handlePassword Change
+  const handlePasswordChange = async () => {
+    const userId = getUserIdFromToken();
+    const newPassword = prompt("Enter your new password");
+    if (!userId) {
+      return console.log("userId not found");
+    }
+    if (newPassword) {
+      try {
+        await updateUserPassword(userId, newPassword);
+        setUserData((prevData) =>
+          prevData ? { ...prevData, password: newPassword } : null
+        );
+        alert("Password updated successfully");
+      } catch (error) {
+        console.error("error updating password", error);
+        alert("Failed to update password");
+      }
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -91,7 +116,7 @@ const Profile: React.FC = () => {
           </div>
           <div className="space-x-0 space-y-4 md:space-y-4 md:space-x-4">
             <button
-              onClick={() => alert("Password change!")}
+              onClick={handlePasswordChange}
               className="ml-2 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors md:w-auto"
             >
               Change Password
