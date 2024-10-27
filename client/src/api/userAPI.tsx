@@ -149,10 +149,29 @@ const retrieveCatCount = async (id: number) => {
       },
     });
     const data = response.json();
-
+    console.log("number of cats is", data);
     if (!response.ok) {
       throw new Error("Invalid API response");
     }
+    return data;
+  } catch (error) {
+    console.log("Error retrieving cats count", error);
+    return Promise.reject("Could not fetch user by id");
+  }
+};
+
+const retrieveUserCreatedAt = async (id: number) => {
+  try {
+    const response = await fetch(`/api/users/${id}/createdat`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Invalid API response");
+    }
+    const data = response.json();
     return data;
   } catch (error) {
     console.log("Error retrieving cats count", error);
@@ -167,4 +186,5 @@ export {
   deleteUser,
   retrieveUserCats,
   retrieveCatCount,
+  retrieveUserCreatedAt,
 };

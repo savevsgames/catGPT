@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User, Cat } from "../models/index.js";
+import { format } from "date-fns";
 
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
@@ -149,9 +150,11 @@ export const catsOwnedByUser = async (req: Request, res: Response) => {
   try {
     // make sure the user id is a number
     const userId = Number(req.params.id);
+    console.log(userId);
     // find the user using the helper function
     const user = await getUser(userId);
     // get the count of cats owned by a user
+    console.log(user);
     const cats = await Cat.count({
       where: { userId: user?.id },
       include: [
@@ -162,6 +165,7 @@ export const catsOwnedByUser = async (req: Request, res: Response) => {
         },
       ],
     });
+    console.log(cats);
     res.status(200).json(cats);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -169,6 +173,21 @@ export const catsOwnedByUser = async (req: Request, res: Response) => {
 };
 
 // get /users/:userId/createdAt
-export const getUserCreatedAt = async(req: Request, res: Response) => {
-  
-}
+export const getUserCreatedAt = async (req: Request, res: Response) => {
+  try {
+    const userId = Number(req.params.id);
+    const user = await User.findOne({
+      attributes: ["createdAt"],
+      where: { id: userId },
+    });
+    if (user) {
+      const createdAt = user.get("createdAt") as Date;
+      const memberSince = format(createdAt, "yyyy-mm-hh hh:mm:ss");
+      res.status(200).json(memberSince);
+    } else {
+      res.status(404).json("User cant be found");
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

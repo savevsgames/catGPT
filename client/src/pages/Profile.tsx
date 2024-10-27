@@ -1,68 +1,73 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { getUserIdFromToken } from "../utils/userToken";
-import { retrieveUser, retrieveCatCount } from "../api/userAPI";
+import {
+  retrieveUser,
+  retrieveCatCount,
+  retrieveUserCreatedAt,
+} from "../api/userAPI";
 import { UserData } from "../interfaces/userData";
-import { useState, useEffect } from "react";
-
-const [userData, setUserData] = useState<UserData | null>(null);
-const [catCount, setCatCount] = useState(0);
-
-useEffect(() => {
-  //  Query the SQL for user data
-  const fetchData = async () => {
-    const userId = getUserIdFromToken();
-    if (userId) {
-      try {
-        const user = await retrieveUser(userId); //get the user
-        const count = await retrieveCatCount(userId); // get the count of their adoptedcats
-        console.log("user data from useEffect Profile page:", user);
-        console.log("user adopted cats count:", count);
-        setUserData(user);
-        setCatCount(count);
-      } catch (error) {
-        console.error("Error retrieving user and user data:", error);
-      }
-    }
-    fetchData();
-  };
-}, [userData, catCount]);
+import { format } from "date-fns";
 
 const Profile: React.FC = () => {
-  const mockData = {
-    userId: 1,
-    userAvatar: "https://picsum.photos/350/300",
-    catAvatar: "https://picsum.photos/300/300",
-    username: "Cat Lady",
-    bio: "Love cats. ????",
-    yarn: 100,
-    memberSince: "November 2024",
-    info1: "Gold Member",
-    info2: "What should go here?",
-  };
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [catCount, setCatCount] = useState(0);
+  const [memberSince, setMemberSince] = useState<string>("");
 
-  //password change call, will change to api call
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = getUserIdFromToken();
+      if (userId) {
+        try {
+          const user = await retrieveUser(userId); // get user data
+          console.log("User data from Profile page:", user);
+
+          const count = await retrieveCatCount(userId); // get count of adopted cats
+          console.log("User adopted cats count:", count);
+
+          const createdAt = await retrieveUserCreatedAt(userId); // get member since date
+          const createdAtFormatted = format(new Date(createdAt), "MMMM yyyy");
+
+          console.log("Formatted Member Since:", createdAtFormatted);
+
+          setUserData(user);
+
+          setCatCount(count);
+
+          setMemberSince(createdAtFormatted);
+        } catch (error) {
+          console.error("Error retrieving user data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [userData, catCount, memberSince]); // no dependencies set yet
+
+  // Additional effect to log updated state values after they've changed
+  useEffect(() => {
+    console.log("Updated userData:", userData);
+    console.log("Updated catCount:", catCount);
+    console.log("Updated memberSince:", memberSince);
+  }, [userData, catCount, memberSince]);
+
   const handleChangePassword = () => {
-    alert(`password change!`);
+    alert(`Password change!`);
   };
 
-  //bio change call, will change to api call
   const handleChangeBio = () => {
-    console.log(`bio change!`);
+    console.log(`Bio change!`);
   };
 
-  //username change call, will change to api call
   const handleChangeUsername = () => {
-    console.log(`username change!`);
+    console.log(`Username change!`);
   };
-
-  // extract the cats count owner
 
   return (
     <div className="container mx-auto p-6 rounded-lg bg-color_1">
       <div className="md:flex md:space-x-6">
         <div className="w-full md:w-1/3 mb-6 md:mb-0">
           <img
-            src={mockData.userAvatar} // we dont have an avatar for the user
+            src="https://picsum.photos/350/300" // Replace with user avatar if available
             alt="User Avatar"
             className="w-full h-auto rounded-lg shadow-lg mb-4"
           />
@@ -71,19 +76,19 @@ const Profile: React.FC = () => {
               <strong>Yarn:</strong> {userData?.yarn}
             </p>
             <p>
-              <strong>Member Since:</strong> {userData?.memberSince}
+              <strong>Member Since:</strong> {memberSince || "Loading..."}
             </p>
             <p>
-              <strong>Cats Owned:</strong> {catCount}
+              <strong>Cats Owned:</strong> {catCount || "Loading..."}
             </p>
             <p>
-              <strong>User role:</strong> {userData?.userRole}
+              <strong>User Role:</strong> {userData?.userRole || "Loading..."}
             </p>
           </div>
         </div>
         <div className="w-full md:w-2/3">
           <div className="p-6 rounded-lg shadow-lg mb-6 bg-color_2">
-            <h1 className="text-2xl font-semibold mb-2 bg-">
+            <h1 className="text-2xl font-semibold mb-2">
               {userData?.username}
             </h1>
             <p>

@@ -7,6 +7,7 @@ import {
   deleteUser,
   getUserCats,
   catsOwnedByUser,
+  getUserCreatedAt,
 } from "../../controllers/user-controller.js";
 
 const router = express.Router();
@@ -30,6 +31,9 @@ router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 
 // number of cats owned by the user
-router.get("/cats", catsOwnedByUser);
+router.get("/:id/cats", catsOwnedByUser);
+
+// get /users/:userId/createdAt
+router.get("/:id/createdat", getUserCreatedAt);
 
 export { router as userRouter };

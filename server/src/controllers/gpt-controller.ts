@@ -7,6 +7,7 @@ import {
   UserChatRequest,
   CatProfile,
 } from "../interfaces/gpt-interfaces";
+import { format } from "date-fns";
 
 // import models for database operations so we can test the chat interactions - prolly change this to use sequelize endpoints
 // import { User } from "../models/user.js";
@@ -58,9 +59,10 @@ async function formatChatPrompt(
   const interactionHistory = interactions
     .map(
       (interaction) =>
-        `${
-          interaction.interactionType
-        } on ${interaction.interactionDate.toISOString()}`
+        `${interaction.interactionType} on ${format(
+          interaction.interactionDate,
+          "yyyy-MM-dd HH:mm:ss"
+        )}`
     )
     .join(", ");
 
@@ -128,7 +130,7 @@ async function saveInteraction(
       catId,
       interactionType,
       description: summary,
-      interactionDate: new Date(),
+      interactionDate: new Date().toISOString(),
     });
 
     // If new mood is included, update the cat's mood - not implemented yet

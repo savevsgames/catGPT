@@ -24,7 +24,6 @@ export const authenticateToken = (
         return res.sendStatus(403); // forbidden status
       }
       req.user = user as JwtPayload;
-      console.log('middleware auth', user)
 
       return next();
     });
