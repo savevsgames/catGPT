@@ -33,8 +33,8 @@ const Login: React.FC = () => {
       const data = await login(userLoginData);
       AuthService.login(data.token);
       console.log("Login successful:", data);
-      navigate("/home");
       setLoggedIn(AuthService.loggedIn());
+      navigate("/home");
     } catch (err) {
       console.error("Error:", err);
       setError("Invalid username or password");
