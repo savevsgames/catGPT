@@ -91,10 +91,11 @@ export function UserFactory(sequelize: Sequelize) {
           await user.setEmailToLowerCase(); // lower case the email before it gets created on the table
         },
         beforeUpdate: async (updatedUser: User) => {
-          if (updatedUser.password) {
-            await updatedUser.setPassword(updatedUser.password); // hash the new updated password
+          if (updatedUser.changed("password")) {
+            // Only hash if the password field was modified. .changed is sequelize built in
+            await updatedUser.setPassword(updatedUser.password);
           } else {
-            console.log("No updated password to hash");
+            console.log("Password not changed, no need to hash.");
           }
         },
       },

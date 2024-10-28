@@ -287,17 +287,15 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
     res.status(500).json({ message: "This did not work Greg" + error.message });
   }
 };
-// PUT /user/:id/username - update a user's username by id
+// PUT /users/:id/username - update a user's username by id
 export const updateUserUsername = async (req: Request, res: Response) => {
   try {
-    const { username } = req.body;
+    const { newUsername } = req.body;
     const updatedUser = await User.findByPk(req.params.id);
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      updatedUser.username = username;
-
-      await updatedUser.save();
+      await updatedUser.update({ username: newUsername }); // Update only the `username` field
 
       res.status(200).json({ message: "Username updated successfully" });
     }
@@ -306,7 +304,7 @@ export const updateUserUsername = async (req: Request, res: Response) => {
   }
 };
 
-// PUT /user/:id/password - update user's password by id
+// PUT /users/:id/password - update user's password by id
 export const updateUserPassword = async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
@@ -324,15 +322,15 @@ export const updateUserPassword = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
-// PUT /user/:id/bio - update user's bio by id
+// PUT /users/:id/bio - update user's bio by id
 export const updateUserBio = async (req: Request, res: Response) => {
   try {
-    const { bio } = req.body;
+    const { newBio } = req.body;
     const updatedUser = await User.findByPk(req.params.id);
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      updatedUser.bio = bio;
+      updatedUser.bio = newBio;
 
       await updatedUser.save();
 
