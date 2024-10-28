@@ -179,6 +179,83 @@ const retrieveUserCreatedAt = async (id: number) => {
     return Promise.reject("Could not fetch user by id");
   }
 };
+
+const updateUserUsername = async (
+  id: number,
+  newUsername: string
+): Promise<UserData> => {
+  try {
+    const response = await fetch(`/api/users/${id}/username`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+      body: JSON.stringify({ newUsername }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Error retrieving user by id");
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Error retrieving data", error);
+    return Promise.reject("Could not fetch user by id");
+  }
+};
+
+const updateUserPassword = async (
+  id: number,
+  newPassword: string
+): Promise<UserData> => {
+  try {
+    const response = await fetch(`/api/users/${id}/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+      body: JSON.stringify({ password: newPassword }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Error retrieving user by id");
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Error retrieving data", error);
+    return Promise.reject("Could not fetch user by id");
+  }
+};
+const updateUserBio = async (id: number, newBio: string): Promise<UserData> => {
+  try {
+    const response = await fetch(`/api/users/${id}/bio`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Auth.getToken()}`,
+      },
+      body: JSON.stringify({ newBio }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Error retrieving user by id");
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Error retrieving data", error);
+    return Promise.reject("Could not fetch user by id");
+  }
+};
 export {
   retrieveUsers,
   retrieveUser,
@@ -188,4 +265,7 @@ export {
   retrieveUserCats,
   retrieveCatCount,
   retrieveUserCreatedAt,
+  updateUserUsername,
+  updateUserPassword,
+  updateUserBio,
 };
