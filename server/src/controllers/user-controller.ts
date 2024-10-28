@@ -8,28 +8,38 @@ export const getAdoptableCats = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const userId = req.user?.id; // Extract user ID from request
-  if (!userId) {
-    res.status(401).json({ message: "User not authenticated" });
+  const userId = req.query.userId;
+
+  if (typeof userId !== "string") {
+    res.status(400).json({ message: "Invalid userId" });
     return;
   }
 
   try {
-    // Fetch the user's adopted cats from the database
+    // Fetch all the cats that the user has already adopted
     const userCats = await Cat.findAll({
-      where: { userId },
+      where: { userId }, // Get cats associated with this user
     });
 
-    // Extract the IDs of the user's adopted cats
-    const adoptedCatIds = userCats.map((cat) => cat.id);
+    // Extract the names of the adopted cats to filter them out => ID is unique name can match
+    const adoptedCatNames = userCats.map((cat) => cat.name);
 
-    // Filter out adopted cats from the static array
-    const adoptableCats = cats.filter((cat) => !adoptedCatIds.includes(cat.id));
+    // Fetch the first 4 adoptable cats by ID
+    const adoptableCats = await Cat.findAll({
+      where: {
+        id: [1, 2, 3, 4], // we SEED the db with the 4 cat templates as the first 4 cats
+      },
+    });
 
-    res.status(200).json(adoptableCats); // Respond with adoptable cats
+    // Filter out the cats already adopted by this user => by the cat name
+    const availableCats = adoptableCats.filter(
+      (cat) => !adoptedCatNames.includes(cat.name)
+    );
+    // Respond with the available cats
+    res.status(200).json(availableCats);
   } catch (error: any) {
     console.error("Error fetching adoptable cats:", error);
-    res.status(500).json({ message: error.message }); // Send the error message
+    res.status(500).json({ message: error.message });
   }
 };
 

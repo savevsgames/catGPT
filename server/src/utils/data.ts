@@ -14,7 +14,7 @@ const cats = [
   {
     id: 2,
     name: "Bubbles",
-    avatar: null,
+    avatar: "./assets/cats/cat-02-chat-01.png",
     skin: "light brown",
     personality: "excited/bubbly",
     mood: 5,
@@ -25,7 +25,7 @@ const cats = [
   {
     id: 3,
     name: "Shadow",
-    avatar: null,
+    avatar: "./assets/cats/cat-03-chat-01.png",
     skin: "black",
     personality: "quiet/mysterious",
     mood: 5,
@@ -36,7 +36,7 @@ const cats = [
   {
     id: 4,
     name: "Mittens",
-    avatar: null,
+    avatar: "./assets/cats/cat-04-chat-01.png",
     skin: "brown",
     personality: "affectionate/easygoing",
     mood: 5,
