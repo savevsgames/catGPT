@@ -18,6 +18,6 @@ router.get("/:id", getInteractionById);
 router.post("/:catId", createInteraction); // when this route is hit, it means the cat of catId is getting an interaction
 
 // GET /lastfive - to extract the last five interaction were done on a specific cat
-router.get("/lastfive/:catId", getLast5Interactions);
+router.get("/lastfive/cats", getLast5Interactions);
 
 export { router as interactionRouter };

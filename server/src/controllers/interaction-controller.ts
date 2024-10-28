@@ -101,7 +101,8 @@ export const getLast5Interactions = async (
   res: Response
 ): Promise<void> => {
   try {
-    const catId = Number(req.params.catId);
+    // console.log("query", req.query, "params", req.params);
+    const catId = Number(req.query.catId);
     const userId = Number(req.query.userId); // Extracted from query now
 
     // Validate the parameters
