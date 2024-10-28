@@ -290,12 +290,12 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
 // PUT /users/:id/username - update a user's username by id
 export const updateUserUsername = async (req: Request, res: Response) => {
   try {
-    const { username } = req.body;
+    const { newUsername } = req.body;
     const updatedUser = await User.findByPk(req.params.id);
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      await updatedUser.update({ username }); // Update only the `username` field
+      await updatedUser.update({ username: newUsername }); // Update only the `username` field
 
       res.status(200).json({ message: "Username updated successfully" });
     }
@@ -325,12 +325,12 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 // PUT /users/:id/bio - update user's bio by id
 export const updateUserBio = async (req: Request, res: Response) => {
   try {
-    const { bio } = req.body;
+    const { newBio } = req.body;
     const updatedUser = await User.findByPk(req.params.id);
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      updatedUser.bio = bio;
+      updatedUser.bio = newBio;
 
       await updatedUser.save();
 
