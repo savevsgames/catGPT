@@ -12,9 +12,11 @@ import Profile from "./pages/Profile.tsx";
 import Cat from "./pages/Cat.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
 import { CatProvider } from "./context/CatContext.tsx";
+import { LoggedInProvider } from "./context/LoggedInContext.tsx";
 
 function Layout() {
   return (
+    <LoggedInProvider>
     <UserProvider>
       <CatProvider>
       <div className="h-screen flex flex-col bg-gray-800 overflow-hidden">
@@ -28,6 +30,7 @@ function Layout() {
       </div>
       </CatProvider>
     </UserProvider>
+    </LoggedInProvider>
   );
 }
 
