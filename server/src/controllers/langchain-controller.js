@@ -59,9 +59,16 @@ function initializeMemory(sessionId) {
       token: process.env.UPSTASH_REST_TOKEN,
     },
   });
+  // Formats the memory object being stored to the Redis store
   return new BufferMemory({
     memoryKey: "history",
     chatHistory: upstashMessageHistory,
+    format: (message) => ({
+      content: message.content,
+      mood: message.mood,
+      patience: message.patience,
+      timestamp: message.timestamp,
+    }),
   });
 }
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
@@ -69,22 +76,22 @@ async function prepareChatInputs(user, cat, userInput) {
   // Testing the retrieval of interactions data for proper date formatting
   // console.log("Interactions data:", interactions);
   // Create a string with the 5 most recent SQL interactions between the user and cat
-//   const interactionHistory = interactions
-//     .map((interaction) => {
-      
-//       const date = new Date(interaction.interactionDate);
-      
-//       if (isNaN(date.getTime())) {
-//         console.error(
-//           `Invalid date encountered: ${interaction.interactionDate}`
-//         );
-        // Return a string with the interaction type, on Date and description
-    //     return `${interaction.interactionType} on [Invalid Date]: ${interaction.description}`;
-    //   }
-    //   const formattedDate = moment(date).toISOString(); // Convert to ISO format
-    //   return `${interaction.interactionType} on ${formattedDate}: ${interaction.description}`;
-    // })
-    // .join("\n");
+  //   const interactionHistory = interactions
+  //     .map((interaction) => {
+
+  //       const date = new Date(interaction.interactionDate);
+
+  //       if (isNaN(date.getTime())) {
+  //         console.error(
+  //           `Invalid date encountered: ${interaction.interactionDate}`
+  //         );
+  // Return a string with the interaction type, on Date and description
+  //     return `${interaction.interactionType} on [Invalid Date]: ${interaction.description}`;
+  //   }
+  //   const formattedDate = moment(date).toISOString(); // Convert to ISO format
+  //   return `${interaction.interactionType} on ${formattedDate}: ${interaction.description}`;
+  // })
+  // .join("\n");
   return {
     userName: user.username,
     catName: cat.name,
@@ -135,6 +142,14 @@ export async function interactWithCat(req, res) {
   // Initialize the memory with the sessionId for the chat history
   const memory = initializeMemory(sessionId);
 
+  // Get the chat history from the memory store
+  const chatHistory = await memory.chatHistory.getMessages();
+  // And make sure its prepared for the prompt template
+  const formattedHistory = chatHistory
+    .map((msg) => `${msg.timestamp}: ${msg.content}`)
+    .join("\n");
+
+  // Prepare the chat inputs using the user and cat data and the user input
   const inputs = await prepareChatInputs(userData, catData, userInput); //took out interactions
   // Define the Prompt Template using the formatted input
   // The example needs to be in {{ double curly braces }} to be parsed correctly by the prompt template
@@ -163,14 +178,13 @@ export async function interactWithCat(req, res) {
     }}
   
     User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Cat Patience: ${inputs.catPatience} Total Interactions: ${inputs.interactionCount}
-    Chat History: ${memory}
+    Chat History: ${formattedHistory}
   
     User Input: ${inputs.input}
   `);
   // Format the input prompt using the defined prompt template and defined inputs
   const formattedInput = await prompt.format(inputs);
-  
-  
+
   // Invoke the model with the formatted input
   const response = await model.invoke(formattedInput);
   // Parse the response using the output parser
@@ -178,8 +192,8 @@ export async function interactWithCat(req, res) {
   // Save the context (user input and AI response) to Redis memory
   // This is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
   await memory.saveContext(
-    { input: userInput },
-    { output: parsedResponse.content }
+    { input: userInput, speaker: inputs.userName },
+    { output: parsedResponse.content, speaker: inputs.catName }
   );
   // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
