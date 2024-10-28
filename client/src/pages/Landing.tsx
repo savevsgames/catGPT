@@ -1,19 +1,13 @@
 import CatPolaroid from "../components/catPolaroid.tsx";
 import YarnConnection from "../components/yarnConnection.tsx";
+import fetchCatPictures from "../utils/fetchCatPictures.ts";
+
+const catApiPhotos = await fetchCatPictures(4, "small");
 
 const Landing = () => {
-  // The array of pictures
-  const catApiPhotos = [
-    "https://picsum.photos/350/300",
-    "https://picsum.photos/450/300",
-    "https://picsum.photos/300/300",
-    "https://picsum.photos/350/400",
-  ];
 
   const corkboardBackground = "./assets/other/CorkBoard.png";
   const adoptionBanner = "./assets/other/CATGPT-AdoptionBanner.png";
-
-  const catApiPhotos4 = catApiPhotos.slice(0, 4);
 
   // Making a set of coordinates for each picture in the picture array
   const randomPosition = (index: number) => {
@@ -48,8 +42,8 @@ const Landing = () => {
         {catApiPercentCoordinates.map((coordinate, index) => {
           const nextCoordinate =
             catApiPercentCoordinates[
-              (index + 1) % catApiPercentCoordinates.length
-            ];
+            (index + 1) % catApiPercentCoordinates.length
+              ];
           return (
             <YarnConnection
               key={index}
@@ -63,11 +57,11 @@ const Landing = () => {
         })}
 
         {/* Render the cat photos */}
-        {catApiPhotos4.map((photo, index) => (
+        {catApiPhotos.map((photo, index) => (
           <div key={index}>
             <CatPolaroid
               index={index}
-              photoURL={photo}
+              photoURL={photo.url}
               topPercent={`${catApiPercentCoordinates[index].top}%`}
               leftPercent={`${catApiPercentCoordinates[index].left}%`}
             />
