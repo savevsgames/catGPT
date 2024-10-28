@@ -1,19 +1,30 @@
+import { useState, useEffect } from 'react';
+import { Image } from "@thatapicompany/thecatapi/dist/types";
 import CatPolaroid from "../components/catPolaroid.tsx";
 import YarnConnection from "../components/yarnConnection.tsx";
+import fetchCatPictures from "../utils/fetchCatPictures.ts";
 
 const Landing = () => {
-  // The array of pictures
-  const catApiPhotos = [
-    "https://picsum.photos/350/300",
-    "https://picsum.photos/450/300",
-    "https://picsum.photos/300/300",
-    "https://picsum.photos/350/400",
-  ];
+  const [catApiPhotos, setCatApiPhotos] = useState<Image[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const corkboardBackground = "./assets/other/CorkBoard.png";
   const adoptionBanner = "./assets/other/CATGPT-AdoptionBanner.png";
 
-  const catApiPhotos4 = catApiPhotos.slice(0, 4);
+  useEffect(() => {
+    const loadCatPhotos = async () => {
+      try {
+        const photos = await fetchCatPictures(4, "small");
+        setCatApiPhotos(photos);
+      } catch (error) {
+        console.error("Error fetching cat photos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCatPhotos();
+  }, []);
 
   // Making a set of coordinates for each picture in the picture array
   const randomPosition = (index: number) => {
@@ -27,9 +38,29 @@ const Landing = () => {
       left: edgeLimit(randomCoord() + col * 50),
     };
   };
+
   const catApiPercentCoordinates = catApiPhotos.map((_, index) =>
     randomPosition(index)
   );
+
+  if (isLoading) {
+    return (
+      <div className="relative bg-color_1 min-h-screen p-4 gap-4 flex justify-start items-center -z-30 flex-col">
+        <img
+          src={adoptionBanner}
+          alt="Banner - Cat GPT Adoption Board"
+          className="max-w-5xl margin-auto"
+        />
+        <div className="relative w-full max-w-5xl h-[600px] bg-color_1 rounded-lg -z-20">
+          <img
+            src={corkboardBackground}
+            className="w-full h-full -z-10 relative"
+            alt="Corkboard"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative bg-color_1 min-h-screen p-4 gap-4 flex justify-start items-center -z-30 flex-col">
@@ -48,8 +79,8 @@ const Landing = () => {
         {catApiPercentCoordinates.map((coordinate, index) => {
           const nextCoordinate =
             catApiPercentCoordinates[
-              (index + 1) % catApiPercentCoordinates.length
-            ];
+            (index + 1) % catApiPercentCoordinates.length
+              ];
           return (
             <YarnConnection
               key={index}
@@ -63,11 +94,11 @@ const Landing = () => {
         })}
 
         {/* Render the cat photos */}
-        {catApiPhotos4.map((photo, index) => (
+        {catApiPhotos.map((photo, index) => (
           <div key={index}>
             <CatPolaroid
               index={index}
-              photoURL={photo}
+              photoURL={photo.url}
               topPercent={`${catApiPercentCoordinates[index].top}%`}
               leftPercent={`${catApiPercentCoordinates[index].left}%`}
             />
