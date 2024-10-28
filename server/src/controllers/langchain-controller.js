@@ -9,7 +9,7 @@ import { HumanMessage, AIMessage } from "@langchain/core/messages";
 // import { BufferMemory } from "langchain/memory";
 import { ConversationSummaryBufferMemory } from "langchain/memory";
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";
-import { StructuredOutputParser } from "Langchain/output_parsers";
+import { StructuredOutputParser } from "langchain/output_parsers";
 import { z } from "zod";
 
 // Function to get the buffer string from the chat history - to be used to prune memory
