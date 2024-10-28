@@ -295,10 +295,7 @@ export const updateUserUsername = async (req: Request, res: Response) => {
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     } else {
-      await updatedUser.update(
-        { username }, // Only update `username`
-        { fields: ["username"] } // Specify `username` to avoid triggering hooks on other fields
-      );
+      await updatedUser.update({ username }); // Update only the `username` field
 
       res.status(200).json({ message: "Username updated successfully" });
     }
