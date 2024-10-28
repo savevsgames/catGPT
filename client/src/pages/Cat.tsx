@@ -14,7 +14,7 @@ const Cat: React.FC = () => {
 
   let carouselNook = [];
 
-  for (let i = 0; i < 12; i) {
+  for (let i = 0; i < 12; i++) {
     carouselNook[i] = `./assets/nooks/nook${i + 1}.png`; 
   }
 
