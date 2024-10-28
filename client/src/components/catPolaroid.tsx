@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const randomRotation = () => Math.floor(Math.random() * 21) - 10; // Random angle between -10 and 10 degrees
 
-const adoptionPin = "./assets/other/AdoptionPin.png";
+const adoptionPin = "/assets/other/AdoptionPin.png";
 
 interface Props {
   index: number;
@@ -38,7 +38,7 @@ function CatPolaroid(props: Props) {
       <img
         src={adoptionPin}
         alt={`Adoption Pin`}
-        className="absolute w-40 h-40 object-cover rounded shadow-lg bg-color_2"
+        className="absolute w-40 h-40 object-cover rounded shadow-lg"
         style={{
           top: adjustedTopPercent,
           left: props.leftPercent,
