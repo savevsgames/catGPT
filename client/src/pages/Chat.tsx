@@ -5,7 +5,7 @@ import { UserData } from "../interfaces/userData";
 import { getUserIdFromToken } from "../utils/userToken";
 import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
-// import { retrieveLast5Interactions } from "../api/interactionAPI";
+import { retrieveLast5Interactions } from "../api/interactionAPI";
 import { useUser } from "../context/UserContext";
 import { createInteraction } from "../api/interactionAPI";
 import { InteractionData } from "../interfaces/InteractionData";
@@ -24,7 +24,7 @@ export default function Chat() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [catData, setCatData] = useState(selectedCat || null);
   const [interaction, setInteraction] = useState<InteractionData | null>(null);
-  // const [interactions, setInteractions] = useState<InteractionData[]>([]);
+  const [interactions, setInteractions] = useState<InteractionData[]>([]);
 
   const nookPic = "./assets/nooks/nook4.png";
   const userId = getUserIdFromToken();
@@ -37,15 +37,16 @@ export default function Chat() {
       try {
         const fetchedUser = await retrieveUser(userId);
         const fetchedCat = await retrieveCat(selectedCat.id);
-        // const fetchedInteractions =
-        //   (await retrieveLast5Interactions(selectedCat.id!, userId)) || [];
+        const fetchedInteractions = await retrieveLast5Interactions(
+          selectedCat.id!,
+          userId
+        );
         setUserData(fetchedUser);
         setCatData(fetchedCat);
-        // if (fetchedInteractions.length > 0) {
-        //   setInteractions(fetchedInteractions);
-        // } else {
-        //   setInteractions([]);
-        // }
+        if (fetchedInteractions.length > 0) {
+          setInteractions(fetchedInteractions);
+          console.log("Interactions:", fetchedInteractions);
+        }
       } catch (error) {
         console.error("Error retrieving user or cat data:", error);
       }
@@ -89,6 +90,24 @@ export default function Chat() {
         content: data.content,
       };
       setMessages((prev) => [...prev, catMessage]);
+      // Temp logging
+      // console.log("Chat response:", data);
+      const {
+        content: catResponse,
+        mood: newMood,
+        patience: newPatience,
+        timestamp,
+      } = data;
+      console.log(
+        "Cat Response:",
+        catResponse,
+        "New Mood:",
+        newMood,
+        "New Patience:",
+        newPatience,
+        "Timestamp:",
+        timestamp
+      );
     } catch (error) {
       console.error("Error during chat interaction:", error);
     }
@@ -120,11 +139,12 @@ export default function Chat() {
   if (!catData || !user) return <p>Loading...</p>;
 
   if (!userData) return <p>Fetching user data...</p>;
-  const { yarn } = userData;
+  // const { yarn } = userData;
 
+  if (!interactions) return <p>Fetching interactions...</p>;
   // Will use yarn next update to interact with the cat
-  console.log("Yarn:", yarn);
-  // console.log("Interactions:", interactions);
+  // console.log("Yarn:", yarn);
+  console.log("Interactions:", interactions);
 
   return (
     <div className="flex h-full w-full">

@@ -36,13 +36,15 @@ const createInteraction = async (interactionType: string, catId: number) => {
 // retrieve last 5 interactions
 const retrieveLast5Interactions = async (catId: number, userId: number) => {
   try {
-    const response =
-      (await fetch(`/api/interactions/lastfive/${catId}?userId=${userId}`, {
+    const response = await fetch(
+      `/api/interactions/lastfive/cats?catId=${catId}&userId=${userId}`,
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Auth.getToken()}`,
         },
-      })) || {};
+      }
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
