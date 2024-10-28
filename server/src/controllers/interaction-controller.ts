@@ -95,35 +95,40 @@ export const createInteraction = async (req: Request, res: Response) => {
   }
 };
 
-// GET -/interactions/lastfive/:catId
-export const getLast5Interactions = async (req: Request, res: Response) => {
+// GET -/interactions/lastfive/:catId?userId=userId - get the last 5 interactions on a certain cat
+export const getLast5Interactions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const catId = Number(req.params.catId);
-    const userId = req.user?.id;
+    const userId = Number(req.query.userId); // Extracted from query now
+
+    // Validate the parameters
+    if (isNaN(catId) || isNaN(userId)) {
+      res.status(400).json({ message: "Invalid cat or user ID." });
+      return;
+    }
+
     const fiveInteractions = await Interaction.findAll({
       include: [
-        {
-          model: User,
-          as: "owner",
-          attributes: ["username"],
-        },
-        {
-          model: Cat,
-          as: "cat",
-          attributes: ["name"],
-        },
+        { model: User, as: "owner", attributes: ["username"] },
+        { model: Cat, as: "cat", attributes: ["name"] },
       ],
       where: { catId, userId },
       attributes: ["interactionType", "interactionDate"],
-      order: ["interactionDate"],
+      order: [["interactionDate", "DESC"]],
       limit: 5,
     });
-    if (fiveInteractions.length < 5 && fiveInteractions.length > 0) {
+
+    if (fiveInteractions.length > 0) {
+      console.log("Last 5 interactions:", fiveInteractions);
       res.status(200).json(fiveInteractions);
     } else {
-      res.status(404).json("No interactions were found, feed your cat already");
+      res.status(404).json({ message: "No interactions found for this cat." });
     }
   } catch (error: any) {
+    console.error("Error fetching interactions:", error);
     res.status(500).json({ message: error.message });
   }
 };

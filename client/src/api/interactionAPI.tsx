@@ -34,14 +34,15 @@ const createInteraction = async (interactionType: string, catId: number) => {
 };
 
 // retrieve last 5 interactions
-const retrieveLast5Interactions = async (catId: number) => {
+const retrieveLast5Interactions = async (catId: number, userId: number) => {
   try {
-    const response = await fetch(`/api/interactions/lastfive/${catId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Auth.getToken()}`,
-      },
-    });
+    const response =
+      (await fetch(`/api/interactions/lastfive/${catId}?userId=${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Auth.getToken()}`,
+        },
+      })) || {};
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -50,7 +51,7 @@ const retrieveLast5Interactions = async (catId: number) => {
     console.log("last five interactions are", data);
     return data;
   } catch (error) {
-    console.log("Error retrieving last five interactions");
+    console.log("Error retrieving last five interactions", error);
   }
 };
 

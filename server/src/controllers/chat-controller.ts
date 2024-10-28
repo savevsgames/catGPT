@@ -5,11 +5,11 @@ import { interactWithCat } from "./langchain-controller.js";
 
 // Chat interaction endpoint
 export const chatWithCat = async (req: Request, res: Response) => {
-  // console.log("Chat request received:", req.body); // Log request body
+  console.log("Chat request received:", req.body); // Log request body
 
   try {
     const response = await interactWithCat(req, res); // Get the structured response
-    // console.log("Final response to be sent:", response); // Log response
+    console.log("Final response to be sent:", response); // Log response
 
     // Send the response to the frontend
     return res.status(200).json(response); // Ensure 200 OK response

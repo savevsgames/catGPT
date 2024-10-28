@@ -21,7 +21,4 @@ export function extractUser(token: string): string | null {
 
 export default extractUser;
 
-// eyJ1c2VybmFtZSI6ImEiLCJpZCI6NywiaWF0IjoxNzI5OTI0NzI4LCJleHAiOjE3Mjk5MzE5Mjh9
-// eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTkyNTEwOCwiZXhwIjoxNzI5OTMyMzA4fQ
-// eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTkyNTE0NCwiZXhwIjoxNzI5OTMyMzQ0fQ
-// eyJ1c2VybmFtZSI6IkdHIiwiaWQiOjYsImlhdCI6MTcyOTkyNTE3OCwiZXhwIjoxNzI5OTMyMzc4fQ
+

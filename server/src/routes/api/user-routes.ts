@@ -8,9 +8,11 @@ import {
   getUserCats,
   catsOwnedByUser,
   getUserCreatedAt,
+  getAdoptableCats,
   updateUserBio,
   updateUserPassword,
   updateUserUsername,
+
 } from "../../controllers/user-controller.js";
 
 const router = express.Router();
@@ -20,6 +22,9 @@ router.get("/", getAllUsers);
 
 // GET /users/cats -get the cats for a single user
 router.get("/adoptedcats", getUserCats);
+
+// GET /users/adoptablecats - get all cats that are not adopted
+router.get("/adoptablecats", getAdoptableCats);
 
 // GET /users/:id - get user by id
 router.get("/:id", getUserById);
