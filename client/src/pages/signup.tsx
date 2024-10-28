@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignUpData } from "../interfaces/SignUpData";
-import Auth from "../utils/auth";
+import AuthService from "../utils/auth";
 import { signup } from "../api/authAPI";
+import { useLoggedIn } from "../context/LoggedInContext";
 
 const Signup: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { setLoggedIn } = useLoggedIn();
   const [form, setForm] = useState({
     email: "",
     username: "",
@@ -46,8 +48,9 @@ const Signup: React.FC = () => {
     try {
       const data = await signup(newUser);
       setError("");
-      Auth.login(data.token);
+      AuthService.login(data.token);
       // if successful navigate to login page
+      setLoggedIn(true);
       navigate("/home");
     } catch (err) {
       console.error("Signup failed", err);
@@ -143,3 +146,5 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
+
+

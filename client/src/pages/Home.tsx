@@ -87,7 +87,7 @@ const Home: React.FC = () => {
   const handleCat = (cat: CatData) => {
     setSelectedCat(cat);
     const catName = cat.name.toLowerCase().replace(/\s+/g, "-");
-    navigate(`/${catName}`, { state: { cat } });
+    navigate(`/${catName}/Cat`, { state: { cat } });
   };
 
   return (

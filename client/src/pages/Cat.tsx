@@ -6,7 +6,7 @@ const Cat: React.FC = () => {
   const { selectedCat: cat } = useCatContext();
   const navigate = useNavigate();
   const random = Math.ceil((Math.random() * 12) % 12)
-  const [currentNook, setCurrentNook] = useState(`./assets/nooks/nook${random}.png`)
+  const [currentNook, setCurrentNook] = useState(`/assets/nooks/nook${random}.png`)
   
   if(!cat) {
     return <p>no cat found</p>
@@ -14,13 +14,13 @@ const Cat: React.FC = () => {
 
   let carouselNook = [];
 
-  for (let i = 0; i < 12; i) {
-    carouselNook[i] = `./assets/nooks/nook${i + 1}.png`; 
+  for (let i = 0; i < 12; i++) {
+    carouselNook[i] = `/assets/nooks/nook${i + 1}.png`; 
   }
 
   const handleChatClick = () => {
-    // const catName = cat.name.toLowerCase();
-    navigate(`/Chat`, { state: { cat } });
+    const catName = cat.name.toLowerCase();
+    navigate(`/${catName}/Chat`, { state: { cat } });
   };
 
   return (
