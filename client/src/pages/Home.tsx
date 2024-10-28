@@ -23,13 +23,19 @@ const Home: React.FC = () => {
         const token = Auth.getToken();
 
         // Fetch adoptable cats
-        const adoptableResponse = await fetch("./api/users/adoptablecats", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Pass token here
-          },
-        });
-        console.log(adoptableResponse);
+        const adoptableResponse = await fetch(
+          `./api/users/adoptablecats?userId=${userId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(
+          `Fetching from: ./api/users/adoptablecats?userId=${userId}`
+        );
+        console.log("Response from /adoptablecats req: ", adoptableResponse);
         if (!adoptableResponse.ok) {
           throw new Error(
             `Failed to fetch adoptable cats: ${adoptableResponse.statusText}`
