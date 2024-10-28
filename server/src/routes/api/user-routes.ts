@@ -9,6 +9,10 @@ import {
   catsOwnedByUser,
   getUserCreatedAt,
   getAdoptableCats,
+  updateUserBio,
+  updateUserPassword,
+  updateUserUsername,
+
 } from "../../controllers/user-controller.js";
 
 const router = express.Router();
@@ -40,4 +44,12 @@ router.get("/:id/cats", catsOwnedByUser);
 // get /users/:userId/createdAt
 router.get("/:id/createdat", getUserCreatedAt);
 
+// put /users/:userId/username -update user username
+router.put("/:id/username", updateUserUsername);
+
+// put /users/:userId/password -update user password
+router.put("/:id/password", updateUserPassword);
+
+// put /users/:userId/bio -update user bio
+router.put("/:id/bio", updateUserBio);
 export { router as userRouter };

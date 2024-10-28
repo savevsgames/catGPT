@@ -140,6 +140,12 @@ export default function Chat() {
           Chat with {catData.name}
         </h1>
 
+
+        {/* Chat Messages */}
+        <div>
+          <strong>Yarn available:</strong> {userData?.yarn}
+        </div>
+
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
             <div
