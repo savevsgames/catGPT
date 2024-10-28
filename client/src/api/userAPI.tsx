@@ -3,6 +3,7 @@ import { SignUpData } from "../interfaces/SignUpData";
 import { ApiMessage } from "../interfaces/ApiMessage";
 import { UserData } from "../interfaces/userData";
 import Auth from "../utils/auth";
+import { CatData } from "../interfaces/CatData";
 
 // get all users
 const retrieveUsers = async () => {
@@ -26,7 +27,7 @@ const retrieveUsers = async () => {
 };
 
 // get /users/adoptedcats - get the adopted cats by logged in user
-const retrieveUserCats = async () => {
+const retrieveUserCats = async (): Promise<CatData[]> => {
   try {
     const response = await fetch("/api/users/adoptedcats", {
       headers: {
@@ -34,10 +35,12 @@ const retrieveUserCats = async () => {
         Authorization: `Bearer ${Auth.getToken()}`,
       },
     });
-    const data = response.json();
+
     if (!response.ok) {
-      throw new Error("Error retrieving the user.s adopted cats");
+      throw new Error("Error retrieving the user's adopted cats");
     }
+    const data: CatData[] = await response.json(); // Added await here and CatData[] type
+
     return data;
   } catch (error: any) {
     console.log("Error retrieving data:", error);

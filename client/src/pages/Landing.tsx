@@ -10,8 +10,8 @@ const Landing = () => {
     "https://picsum.photos/350/400",
   ];
 
-  const corkboardBackground = "./assets/CorkBoard.png";
-  const adoptionBanner = "./assets/CATGPT-AdoptionBanner.png";
+  const corkboardBackground = "./assets/other/CorkBoard.png";
+  const adoptionBanner = "./assets/other/CATGPT-AdoptionBanner.png";
 
   const catApiPhotos4 = catApiPhotos.slice(0, 4);
 

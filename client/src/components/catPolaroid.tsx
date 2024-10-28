@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const randomRotation = () => Math.floor(Math.random() * 21) - 10; // Random angle between -10 and 10 degrees
 
-const adoptionPin = "./assets/AdoptionPin.png";
+const adoptionPin = "./assets/other/AdoptionPin.png";
 
 interface Props {
   index: number;

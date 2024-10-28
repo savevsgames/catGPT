@@ -1,6 +1,80 @@
 import { Request, Response } from "express";
 import { User, Cat } from "../models/index.js";
 
+import cats from "../utils/data.js"; // Import the adoptable cats data (userId = null)
+
+// GET /users/adoptablecats - Get adoptable cats
+export const getAdoptableCats = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id; // Extract user ID from request
+  if (!userId) {
+    res.status(401).json({ message: "User not authenticated" });
+    return;
+  }
+
+  try {
+    // Fetch the user's adopted cats from the database
+    const userCats = await Cat.findAll({
+      where: { userId },
+    });
+
+    // Extract the IDs of the user's adopted cats
+    const adoptedCatIds = userCats.map((cat) => cat.id);
+
+    // Filter out adopted cats from the static array
+    const adoptableCats = cats.filter((cat) => !adoptedCatIds.includes(cat.id));
+
+    res.status(200).json(adoptableCats); // Respond with adoptable cats
+  } catch (error: any) {
+    console.error("Error fetching adoptable cats:", error);
+    res.status(500).json({ message: error.message }); // Send the error message
+  }
+};
+
+// POST /api/cats - Adopt a cat and save it to the database
+export const adoptCat = async (req: Request, res: Response): Promise<void> => {
+  const {
+    id,
+    name,
+    avatar,
+    skin,
+    personality,
+    mood,
+    deathFlag,
+    isAlive,
+    userId,
+  } = req.body;
+
+  try {
+    // Check if the cat exists in the static cats array by ID
+    const catToAdopt = cats.find((cat) => cat.id === id);
+    if (!catToAdopt) {
+      res.status(404).json({ message: "Cat not found in available list" });
+      return;
+    }
+
+    // Create the new cat in the database with the provided data
+    const newCat = await Cat.create({
+      id,
+      name,
+      avatar: avatar || "./assets/other/adoptMe.png", // Use a default avatar if null
+      skin,
+      personality,
+      mood,
+      deathFlag,
+      isAlive,
+      userId, // Associate the cat with the logged-in user
+    });
+
+    res.status(201).json({ message: "Cat adopted successfully!", cat: newCat });
+  } catch (error: any) {
+    console.error("Error adopting cat:", error);
+    res.status(500).json({ message: "Error adopting cat" });
+  }
+};
+
 // GET /users - get all users
 export const getAllUsers = async (_req: Request, res: Response) => {
   try {
@@ -210,6 +284,6 @@ export const getUserCreatedAt = async (req: Request, res: Response) => {
       res.status(404).json("User cant be found");
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "This did not work Greg" + error.message });
   }
 };
