@@ -2,56 +2,44 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { getUserCreatedAt } from "./user-controller.js";
-// For ISO8601 date formatting of SQL data in wrong format
 import moment from "moment";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { BufferMemory } from "langchain/memory";
+import { HumanMessage, AIMessage } from "@langchain/core/messages";
+// import { BufferMemory } from "langchain/memory";
+import { ConversationSummaryBufferMemory } from "langchain/memory";
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";
 import { StructuredOutputParser } from "Langchain/output_parsers";
 import { z } from "zod";
-// SQL Data Retrieval
-// const userAndCatData = {
-//   // We can replace this mock data with actual SQL queries next
-//   user: {
-//     id: 1,
-//     username: "Greg",
-//     yarn: 100,
-//     userRole: "standard",
-//   },
-//   cat: {
-//     id: 2,
-//     name: "Whiskers",
-//     mood: 5, // Mood as a number 0-10
-//     personality: "playful, curious, scared of loud noises",
-//     isAlive: true,
-//   },
-//   interactions: [
-//     {
-//       id: 1,
-//       interactionType: "play",
-//       interactionDate: new Date("2024-10-22T04:33:08-06:00").toISOString(),
-//       description: "Played with a /toy from memory/.",
-//       userId: 1,
-//       catId: 2,
-//     },
-//     {
-//       id: 2,
-//       interactionType: "feed",
-//       interactionDate: new Date("2024-10-22T04:30:08-06:00").toISOString(),
-//       description: "Fed the cat a /ex. can of tuna./",
-//       userId: 1,
-//       catId: 2,
-//     },
-//   ],
-// };
+
+// Function to get the buffer string from the chat history - to be used to prune memory
+function getBufferString(
+  messages = [],
+  humanPrefix = "Human",
+  aiPrefix = "AI"
+) {
+  if (!Array.isArray(messages)) {
+    console.error("Chat history is not an array:", messages);
+    return "";
+  }
+
+  return messages
+    .map((msg) => {
+      const speaker =
+        msg.constructor.name === "HumanMessage" ? humanPrefix : aiPrefix;
+      return `${speaker}: ${msg.content}`;
+    })
+    .join("\n");
+}
+
 // Initialize the Chat Model
 const model = new ChatOpenAI({
   modelName: "gpt-3.5-turbo",
   temperature: 0.1,
+  maxTokens: 500,
 });
 // Redis chat history setup - now it will take in the sessionId (made of token_id and catId)
-function initializeMemory(sessionId) {
+async function initializeMemory(sessionId) {
   const upstashMessageHistory = new UpstashRedisChatMessageHistory({
     sessionId, // Now this is being passed in
     config: {
@@ -59,20 +47,30 @@ function initializeMemory(sessionId) {
       token: process.env.UPSTASH_REST_TOKEN,
     },
   });
-  // Formats the memory object being stored to the Redis store
-  return new BufferMemory({
+  // Formats the memory object being stored to the Redis store - this is the default Buffer Memory
+  // we are trying to incorporate the newer ConversationSummaryBufferMemory to summarize the chat history and save tokens
+  // return new BufferMemory({
+  //   memoryKey: "history",
+  //   chatHistory: upstashMessageHistory,
+  //   format: (message) => ({
+  //     content: message.content,
+  //     mood: message.mood,
+  //     patience: message.patience,
+  //     timestamp: message.timestamp,
+  //   }),
+  //   maxTokenLimit: 500,
+  // });
+  // New ConversationSummaryBufferMemory setup
+  return new ConversationSummaryBufferMemory({
+    llm: model,
     memoryKey: "history",
+    inputKey: "text", // Specify the input key explicitly
     chatHistory: upstashMessageHistory,
-    format: (message) => ({
-      content: message.content,
-      mood: message.mood,
-      patience: message.patience,
-      timestamp: message.timestamp,
-    }),
+    maxTokenLimit: 500,
   });
 }
 // Function to Prepare Chat Inputs for the Model based on User and Cat Data
-async function prepareChatInputs(user, cat, userInput) {
+async function prepareChatInputs(user, cat, formattedHistory, userInput) {
   // Testing the retrieval of interactions data for proper date formatting
   // console.log("Interactions data:", interactions);
   // Create a string with the 5 most recent SQL interactions between the user and cat
@@ -99,7 +97,7 @@ async function prepareChatInputs(user, cat, userInput) {
     catMood: cat.mood,
     catPatience: cat.patience,
     input: userInput,
-    // history: interactionHistory,
+    formattedHistory,
   };
 }
 // Set up a zod schema for the response - this allows us to pull out the mood, patience, and
@@ -140,17 +138,66 @@ export async function interactWithCat(req, res) {
   const sessionId = `${userChatDBID}_${catId}`;
   console.log("Session ID:", sessionId);
   // Initialize the memory with the sessionId for the chat history
-  const memory = initializeMemory(sessionId);
+  const memory = await initializeMemory(sessionId);
 
-  // Get the chat history from the memory store
+  // Retrieve chat history from memory
   const chatHistory = await memory.chatHistory.getMessages();
-  // And make sure its prepared for the prompt template
+
+  // Log the full chat history (for debugging purposes)
+  // console.log("Chat History:", chatHistory);
+
+  // Format the chat history into a prompt-friendly string
   const formattedHistory = chatHistory
-    .map((msg) => `${msg.timestamp}: ${msg.content}`)
+    .map((msg) => {
+      const speaker = msg.constructor.name === "HumanMessage" ? "Human" : "AI";
+      return `${speaker}: ${msg.content}`;
+    })
     .join("\n");
 
+  // Log the formatted history for debugging
+  // console.log("Formatted Chat History: ", formattedHistory);
+
+  // Prune the chat history if the token limit is exceeded with the getBufferString function
+  memory.prune = async function () {
+    console.log("Attempting to prune conversation.");
+
+    try {
+      const messages = await this.chatHistory.getMessages();
+      const bufferString = getBufferString(messages, "Human", "AI");
+      // console.log("Messages: ", messages, "Buffer String:", bufferString);
+
+      const numTokens = await this.llm.getNumTokens(bufferString);
+      console.log(`Number of tokens: ${numTokens}`);
+
+      if (numTokens > this.maxTokenLimit) {
+        console.log("Token limit exceeded. Summarizing conversation...");
+
+        // Create a prompt as an array of chat messages
+        const summaryPrompt = [new HumanMessage({ content: bufferString })];
+
+        // Invoke the model with the properly formatted chat message array
+        const summaryResponse = await this.llm.invoke(summaryPrompt);
+        console.log("Generated Summary:", summaryResponse.content);
+
+        // Replace the chat history with the summary in Redis
+        await this.chatHistory.clear();
+        await this.chatHistory.addMessage(
+          new AIMessage({ content: summaryResponse.content })
+        );
+        console.log("Chat history replaced with summary.");
+      }
+    } catch (error) {
+      console.error("Error during pruning:", error);
+    }
+  };
+
   // Prepare the chat inputs using the user and cat data and the user input
-  const inputs = await prepareChatInputs(userData, catData, userInput); //took out interactions
+  const inputs = await prepareChatInputs(
+    userData,
+    catData,
+    formattedHistory,
+    userInput
+  ); //took out interactions
   // Define the Prompt Template using the formatted input
   // The example needs to be in {{ double curly braces }} to be parsed correctly by the prompt template
   const prompt = ChatPromptTemplate.fromTemplate(`
@@ -160,6 +207,7 @@ export async function interactWithCat(req, res) {
     If your mood is low, you may not want to play or eat. If your patience is low, you may not want to interact with the user. Every time you interact
     with the user, your patience has a chance (% is up to you based and on cat personality) of decreasing by 1. If your patience is 0, you will
     not respond kindly. If your mood is 0, you will not respond kindly. If you receive a gift, play or food, your mood will increase.  
+    Try to use more words than just meow though; talk like a kitty cat would if it could talk.
   
     You must respond in the following JSON format:
     {{
@@ -178,7 +226,7 @@ export async function interactWithCat(req, res) {
     }}
   
     User: ${inputs.userName}, Cat: ${inputs.catName}, Current Mood: ${inputs.catMood}, Cat Patience: ${inputs.catPatience} Total Interactions: ${inputs.interactionCount}
-    Chat History: ${formattedHistory}
+    Chat History: ${inputs.formattedHistory}
   
     User Input: ${inputs.input}
   `);
@@ -189,12 +237,20 @@ export async function interactWithCat(req, res) {
   const response = await model.invoke(formattedInput);
   // Parse the response using the output parser
   const parsedResponse = await outputParser.parse(response.content);
+
   // Save the context (user input and AI response) to Redis memory
-  // This is where we can add memory parsing and functions to reduce token costs by limiting and optimizing memory usage.
-  await memory.saveContext(
-    { input: userInput, speaker: inputs.userName },
-    { output: parsedResponse.content, speaker: inputs.catName }
-  );
+  await memory
+    .saveContext(
+      { text: `${inputs.userName}: ${userInput}` },
+      { text: `${inputs.catName}: ${parsedResponse.content}` }
+    )
+    .then(() => console.log("Context saved successfully"))
+    .catch((err) => console.error("Error saving context:", err));
+
+  // Save the chat history to Redis memory
+  const chatHistoryAfterSave = await memory.chatHistory.getMessages();
+  console.log("Chat History After Save:", chatHistoryAfterSave);
+
   // Return a structured response with mood and timestamp - mood should be updated by the AI eventually - right now its the input mood still
   return {
     content: parsedResponse.content,
