@@ -37,13 +37,17 @@ export default function Chat() {
     const fetchData = async () => {
       try {
         const fetchedUser = await retrieveUser(userId);
+        setUserData(fetchedUser);
+        console.log("User has", userData?.yarn, "yarn"); // bebugging
+
         const fetchedCat = await retrieveCat(selectedCat.id);
+        setCatData(fetchedCat);
+
         const fetchedInteractions = await retrieveLast5Interactions(
           selectedCat.id!,
           userId
         );
-        setUserData(fetchedUser);
-        setCatData(fetchedCat);
+
         if (fetchedInteractions.length > 0) {
           setInteractions(fetchedInteractions);
           console.log("Interactions:", fetchedInteractions);
@@ -54,7 +58,7 @@ export default function Chat() {
     };
 
     fetchData();
-  }, [userId, selectedCat]);
+  }, [userId, selectedCat, interaction]);
 
   // Function to handle sending a message to the OPENAI API - when a user sends a message
   const handleSend = async (event: FormEvent) => {
@@ -127,9 +131,17 @@ export default function Chat() {
 
     try {
       const data = await createInteraction(interactionType, catData.id!);
+
       setInteraction(data);
+
       console.log("Interaction:", interaction);
-      const autoMessage = `You just ${interactionType} with ${catData.name}.`;
+
+      const updatedUserData = await retrieveUser(userId);
+      setUserData(updatedUserData);
+
+      console.log("updated user yarn:", updatedUserData.yarn);
+
+      const autoMessage = `You just ${interactionType}ed with ${catData.name}.`;
       setMessages((prev) => [
         ...prev,
         { sender: "INFO", content: autoMessage },
@@ -144,7 +156,7 @@ export default function Chat() {
             Authorization: `Bearer ${Auth.getToken()}`,
           },
           body: JSON.stringify({
-            userData,
+            userData: updatedUserData,
             catData,
             // interactions,
             userInput: autoMessage,
