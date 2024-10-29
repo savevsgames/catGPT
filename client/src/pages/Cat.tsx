@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; //useEffect
 import { useNavigate } from "react-router-dom";
 import { useCatContext } from "../context/CatContext";
+import { useNookContext } from "../context/NookContext";
 
 const Cat: React.FC = () => {
   const { selectedCat: cat } = useCatContext();
   const navigate = useNavigate();
-  const random = Math.ceil((Math.random() * 12) % 12)
-  const [currentNook, setCurrentNook] = useState(`/assets/nooks/nook${random}.png`)
-  
+  const random = Math.ceil((Math.random() * 12) % 12);
+  const [currentNook, setCurrentNook] = useState(`/assets/nooks/nook${random}.png`);
+  const { setSelectedNook } = useNookContext();
+  setSelectedNook(currentNook);
+
   if(!cat) {
     return <p>no cat found</p>
   }
@@ -49,14 +52,14 @@ const Cat: React.FC = () => {
             className="w-full max-h-64 rounded-lg shadow-lg"
           />
 
-          {/* Carousel of images */}
-          <div className="mt-4 space-x-4 flex justify-center items-center">
+          {/* Carousel of thumbnails */}
+          <div className="mt-4 flex space-x-2 overflow-x-auto scrollbar-thin scrollbar-thumb-color_3 scrollbar-track-color_2">
             {carouselNook.map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`Nook ${index + 1}`}
-                className="w-20 h-20 rounded-md cursor-pointer border-2 border-transparent hover:border-color_5 transition-colors"
+                className="w-24 h-24 rounded-md cursor-pointer hover: border-2 border-color_5 transition-colors"
                 onClick={() => setCurrentNook(image)}
               />
             ))}

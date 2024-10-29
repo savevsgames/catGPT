@@ -10,14 +10,14 @@ import Chat from "./pages/Chat.tsx";
 import Error from "./pages/Error.tsx";
 import Profile from "./pages/Profile.tsx";
 import Cat from "./pages/Cat.tsx";
-import { UserProvider } from "./context/UserContext.tsx";
+import { NookProvider } from "./context/NookContext.tsx";
 import { CatProvider } from "./context/CatContext.tsx";
 import { LoggedInProvider } from "./context/LoggedInContext.tsx";
 
 function Layout() {
   return (
     <LoggedInProvider>
-    <UserProvider>
+    <NookProvider>
       <CatProvider>
       <div className="h-screen flex flex-col bg-gray-800 overflow-hidden">
         <header className="flex-shrink-0">
@@ -29,7 +29,7 @@ function Layout() {
         </main>
       </div>
       </CatProvider>
-    </UserProvider>
+    </NookProvider>
     </LoggedInProvider>
   );
 }

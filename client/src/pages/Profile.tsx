@@ -132,7 +132,8 @@ const Profile: React.FC = () => {
       <div className="w-full md:w-1/3 mb-6 md:mb-0">
         <img src={randomUserImage} alt="User Avatar" className="w-full h-auto rounded-lg shadow-lg mb-4" />
         <div className="p-4 rounded-lg shadow bg-color_2 justify-items-center">
-          <h1 className="text-xl font-semibold">Hi, {userData?.username}</h1>
+          <h1 className="text-xl font-semibold">Profile Details</h1>
+          <p><strong>User Role:</strong> {userData?.userRole}</p>
           <p><strong>Member Since:</strong> {memberSince}</p>
           <p><strong>Cats Owned:</strong> {catCount}</p>
           <p><strong>Yarn:</strong> {userData?.yarn}</p>
