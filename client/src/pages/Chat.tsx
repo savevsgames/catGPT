@@ -116,6 +116,10 @@ export default function Chat() {
     setInput("");
   };
 
+  useEffect(() => {
+    setInteractions((interactions) => [...interactions, interaction!]);
+  }, [interaction]);
+
   // Function to handle interactions with the cat and sent them to the API
   const handleInteraction = async (interactionType: string) => {
     if (!catData || !userData) return;
@@ -254,6 +258,13 @@ export default function Chat() {
         <div>
           <strong>Yarn available:</strong> {userData?.yarn}
         </div>
+        {/* {interactions.length > 0 && (
+          <div>
+            {interactions.map((interaction) => {
+              return <p>{interaction.description}</p>;
+            })}
+          </div>
+        )} */}
         {["Play", "Feed", "Gift"].map((action) => (
           <button
             key={action}

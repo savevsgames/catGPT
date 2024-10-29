@@ -130,7 +130,7 @@ This project is a collaborative effort by the following contributors:
 
 - **Greg**
   - GitHub Profile: [savevsgames](https://github.com/savevsgames)
-  - Email: [greg@example.com](gregcbarker@gmail.com)
+  - Email: [gregcbarker@gmail.com](gregcbarker@gmail.com)
 
 ---
 
