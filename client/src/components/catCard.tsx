@@ -21,7 +21,7 @@ const CatCard: React.FC<CatCardProps> = ({ cat, isAvailable, onClick }) => {
       <h3 className="text-xl font-semibold">{cat.name}</h3>
 
       {isAvailable ? (
-        <button className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+        <button className="m-1 px-4 py-2 bg-color_3 rounded-lg hover:bg-color_5 transition-colors">
           Adopt Me
         </button>
       ) : (

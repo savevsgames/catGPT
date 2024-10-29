@@ -9,6 +9,7 @@ import { retrieveLast5Interactions } from "../api/interactionAPI";
 // import { useUser } from "../context/UserContext";
 import { createInteraction } from "../api/interactionAPI";
 import { InteractionData } from "../interfaces/InteractionData";
+import { useNookContext } from "../context/NookContext";
 
 interface Message {
   sender: string;
@@ -17,7 +18,7 @@ interface Message {
 
 export default function Chat() {
   const { selectedCat } = useCatContext();
-  // const { user } = useUser();
+  const { selectedNook } = useNookContext();
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,7 +27,7 @@ export default function Chat() {
   const [interaction, setInteraction] = useState<InteractionData | null>(null);
   const [interactions, setInteractions] = useState<InteractionData[]>([]);
 
-  const nookPic = "./assets/nooks/nook4.png";
+  const nookPic = selectedNook;
   const userId = getUserIdFromToken();
   console.log("User ID:", userId);
 
