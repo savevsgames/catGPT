@@ -7,23 +7,25 @@ const Cat: React.FC = () => {
   const { selectedCat: cat } = useCatContext();
   const navigate = useNavigate();
   const random = Math.ceil((Math.random() * 12) % 12);
-  const [currentNook, setCurrentNook] = useState(`/assets/nooks/nook${random}.png`);
+  const [currentNook, setCurrentNook] = useState(
+    `/assets/nooks/nook${random}.png`
+  );
   const { setSelectedNook } = useNookContext();
   setSelectedNook(currentNook);
 
-  if(!cat) {
-    return <p>no cat found</p>
+  if (!cat) {
+    return <p>no cat found</p>;
   }
 
   let carouselNook = [];
 
   for (let i = 0; i < 12; i++) {
-    carouselNook[i] = `/assets/nooks/nook${i + 1}.png`; 
+    carouselNook[i] = `/assets/nooks/nook${i + 1}.png`;
   }
 
   const handleChatClick = () => {
-    const catName = cat.name.toLowerCase();
-    navigate(`/${catName}/Chat`, { state: { cat } });
+    // const catName = cat.name.toLowerCase();
+    navigate(`/Chat`, { state: { cat } });
   };
 
   return (
@@ -37,10 +39,18 @@ const Cat: React.FC = () => {
           />
           <div>
             <h3 className="text-2xl font-semibold mb-2">{cat.name}</h3>
-            <p><strong>Mood:</strong> {cat.mood}</p>
-            <p><strong>Info 1:</strong> {cat.mood}</p>
-            <p><strong>Info 2:</strong> {cat.mood}</p>
-            <p><strong>Info 3:</strong> {cat.mood}</p>
+            <p>
+              <strong>Mood:</strong> {cat.mood}
+            </p>
+            <p>
+              <strong>Info 1:</strong> {cat.mood}
+            </p>
+            <p>
+              <strong>Info 2:</strong> {cat.mood}
+            </p>
+            <p>
+              <strong>Info 3:</strong> {cat.mood}
+            </p>
           </div>
         </div>
 
