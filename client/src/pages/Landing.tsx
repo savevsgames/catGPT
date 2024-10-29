@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Image } from "@thatapicompany/thecatapi/dist/types";
 import CatPolaroid from "../components/catPolaroid.tsx";
-import YarnConnection from "../components/yarnConnection.tsx";
+// import YarnConnection from "../components/yarnConnection.tsx";
 import fetchCatPictures from "../utils/fetchCatPictures.ts";
 
 const Landing = () => {
@@ -28,14 +28,23 @@ const Landing = () => {
 
   // Making a set of coordinates for each picture in the picture array
   const randomPosition = (index: number) => {
-    const edgeLimit = (value: number) => Math.min(Math.max(value, 20), 80);
-    const randomCoord = () => Math.random() * 60 - 5;
+    // Ensure positions stay within 20-80% of container
+    const edgeLimit = (value: number) => Math.min(Math.max(value, 20), 60);
+
+    // Calculate grid position (2x3 grid)
     const row = Math.floor(index / 2);
     const col = index % 2;
 
+    // Base position at center of grid cell
+    const baseLeft = 25 + (col * 50); // 25% spacing between columns
+    const baseTop = 20 + (row * 30);  // 20% spacing between rows
+
+    // Add controlled randomness within the cell
+    const randomOffset = () => (Math.random() - 0.5) * 15; // ±7.5% random offset
+
     return {
-      top: edgeLimit(randomCoord() + row * 50),
-      left: edgeLimit(randomCoord() + col * 50),
+      top: edgeLimit(baseTop + randomOffset()),
+      left: edgeLimit(baseLeft + randomOffset()),
     };
   };
 
@@ -76,22 +85,22 @@ const Landing = () => {
           alt="Corkboard"
         />
         {/* Render yarn connections */}
-        {catApiPercentCoordinates.map((coordinate, index) => {
-          const nextCoordinate =
-            catApiPercentCoordinates[
-            (index + 1) % catApiPercentCoordinates.length
-              ];
-          return (
-            <YarnConnection
-              key={index}
-              startCoordinate={coordinate}
-              endCoordinate={nextCoordinate}
-              segmentLength={10}
-              // TODO: Find a picture for yarn
-              yarnUrl=""
-            />
-          );
-        })}
+        {/*{catApiPercentCoordinates.map((coordinate, index) => {*/}
+        {/*  const nextCoordinate =*/}
+        {/*    catApiPercentCoordinates[*/}
+        {/*    (index + 1) % catApiPercentCoordinates.length*/}
+        {/*      ];*/}
+        {/*  return (*/}
+        {/*    <YarnConnection*/}
+        {/*      key={index}*/}
+        {/*      startCoordinate={coordinate}*/}
+        {/*      endCoordinate={nextCoordinate}*/}
+        {/*      segmentLength={10}*/}
+        {/*      // TODO: Find a picture for yarn*/}
+        {/*      yarnUrl=""*/}
+        {/*    />*/}
+        {/*  );*/}
+        {/*})}*/}
 
         {/* Render the cat photos */}
         {catApiPhotos.map((photo, index) => (

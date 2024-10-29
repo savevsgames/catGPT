@@ -20,15 +20,14 @@ const Home: React.FC = () => {
     const fetchCatsAndUser = async () => {
       try {
         const userId = getUserIdFromToken();
-        const token = Auth.getToken();
-
+        console.log("User ID: ", userId);
         // Fetch adoptable cats
         const adoptableResponse = await fetch(
           `./api/users/adoptablecats?userId=${userId}`,
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${Auth.getToken()}`,
             },
           }
         );
@@ -66,7 +65,7 @@ const Home: React.FC = () => {
       const token = Auth.getToken(); // Ensure token is available
       const userId = getUserIdFromToken();
 
-      const response = await fetch("/api/cats/createcat", {
+      const response = await fetch("/api/cats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,13 +76,14 @@ const Home: React.FC = () => {
           userId,
         }),
       });
+      console.log("User ", userId, " is Adopting cat: ", cat, "token: ", token);
 
       if (!response.ok) {
         throw new Error("Failed to adopt cat");
       }
 
       console.log("Cat adopted successfully");
-      window.location.reload(); // Reload the page to reflect changes
+      // window.location.reload(); // Reload the page to reflect changes
     } catch (error) {
       console.error("Error adopting cat:", error);
     }
