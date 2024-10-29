@@ -1,7 +1,6 @@
 // Cats are not adopted initially so userId is null until adopted by a user
 const cats = [
   {
-    id: 1,
     name: "Whiskers",
     avatar: "./assets/cats/cat-01-chat-01.png",
     skin: "orange",
@@ -12,7 +11,6 @@ const cats = [
     userId: null,
   },
   {
-    id: 2,
     name: "Bubbles",
     avatar: "./assets/cats/cat-02-chat-01.png",
     skin: "light brown",
@@ -23,7 +21,6 @@ const cats = [
     userId: null,
   },
   {
-    id: 3,
     name: "Shadow",
     avatar: "./assets/cats/cat-03-chat-01.png",
     skin: "black",
@@ -34,7 +31,6 @@ const cats = [
     userId: null,
   },
   {
-    id: 4,
     name: "Mittens",
     avatar: "./assets/cats/cat-04-chat-01.png",
     skin: "brown",
