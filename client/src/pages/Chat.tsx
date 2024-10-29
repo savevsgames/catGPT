@@ -10,6 +10,7 @@ import { retrieveLast5Interactions } from "../api/interactionAPI";
 import { createInteraction } from "../api/interactionAPI";
 import { InteractionData } from "../interfaces/InteractionData";
 import { useNookContext } from "../context/NookContext";
+import { CatData } from "../interfaces/CatData";
 
 interface Message {
   sender: string;
@@ -120,6 +121,10 @@ export default function Chat() {
     setInput("");
   };
 
+  useEffect(() => {
+    setInteractions((interactions) => [...interactions, interaction!]);
+  }, [interaction]);
+
   // Function to handle interactions with the cat and sent them to the API
   const handleInteraction = async (interactionType: string) => {
     if (!catData || !userData) return;
@@ -137,7 +142,26 @@ export default function Chat() {
 
       console.log("updated user yarn:", updatedUserData.yarn);
 
-      const autoMessage = `You just ${interactionType}ed with ${catData.name}.`;
+      const generateAutoMessage = (
+        interactionType: string,
+        catData: CatData
+      ) => {
+        switch (interactionType) {
+          case "play":
+            return `You just played with ${catData.name}.`;
+          case "gift":
+            return `You just gave a gift to ${catData.name}.`;
+          case "feed":
+            return `You just fed ${catData.name}.`;
+          default:
+            return `You just interacted with ${catData.name}.`;
+        }
+      };
+
+      // Use the auto message generation function to create a message based on type of interaction
+      const autoMessage = generateAutoMessage(interactionType, catData);
+      console.log(autoMessage);
+
       setMessages((prev) => [
         ...prev,
         { sender: "INFO", content: autoMessage },
@@ -186,6 +210,14 @@ export default function Chat() {
           "Timestamp:",
           timestamp
         );
+        // Darrio - this is where the pics can be updated
+        // setCatData((prev) => ({
+        //   ...prev,
+        //   mood: newMood,
+        //   patience: newPatience,
+        //   avatar: based on mood will change to new one
+        // })); // Update the cat data with the new mood and patience
+        // could have a catAvatar, setCatAvatar = useState and inject it from there
       } catch (error) {
         console.error("Error during chat interaction:", error);
       }
@@ -219,9 +251,6 @@ export default function Chat() {
         </h1>
 
         {/* Chat Messages */}
-        <div>
-          <strong>Yarn available:</strong> {userData?.yarn}
-        </div>
 
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
@@ -241,7 +270,7 @@ export default function Chat() {
         <img
           src={catData.avatar}
           alt="Cat Avatar"
-          className="absolute bottom-24 left-48 max-w-24"
+          className="absolute bottom-24 left-1/2 max-w-24"
         />
 
         <form
@@ -266,6 +295,16 @@ export default function Chat() {
 
       <div className="w-1/3 p-4 bg-color_1 flex flex-col items-center justify-center gap-10">
         <h2 className="text-xl font-bold text-color_2">Actions</h2>
+        <div>
+          <strong>Yarn available:</strong> {userData?.yarn}
+        </div>
+        {/* {interactions.length > 0 && (
+          <div>
+            {interactions.map((interaction) => {
+              return <p>{interaction.description}</p>;
+            })}
+          </div>
+        )} */}
         {["Play", "Feed", "Gift"].map((action) => (
           <button
             key={action}
