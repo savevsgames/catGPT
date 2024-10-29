@@ -210,6 +210,14 @@ export default function Chat() {
           "Timestamp:",
           timestamp
         );
+        // Darrio - this is where the pics can be updated
+        // setCatData((prev) => ({
+        //   ...prev,
+        //   mood: newMood,
+        //   patience: newPatience,
+        //   avatar: based on mood will change to new one
+        // })); // Update the cat data with the new mood and patience
+        // could have a catAvatar, setCatAvatar = useState and inject it from there
       } catch (error) {
         console.error("Error during chat interaction:", error);
       }
