@@ -4,7 +4,7 @@ import tailwindcss from "tailwindcss";
 
 export default defineConfig({
   server: {
-    port: 3001,
+    port: 5173, // Adjusted for Vite dev server
     open: true, // Automatically open the browser on startup
     proxy: {
       "/api": {
