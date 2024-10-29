@@ -6,7 +6,7 @@ import { getUserIdFromToken } from "../utils/userToken";
 import { retrieveUser } from "../api/userAPI";
 import { retrieveCat } from "../api/catAPI";
 import { retrieveLast5Interactions } from "../api/interactionAPI";
-import { useUser } from "../context/UserContext";
+// import { useUser } from "../context/UserContext";
 import { createInteraction } from "../api/interactionAPI";
 import { InteractionData } from "../interfaces/InteractionData";
 
@@ -17,7 +17,7 @@ interface Message {
 
 export default function Chat() {
   const { selectedCat } = useCatContext();
-  const { user } = useUser();
+  // const { user } = useUser();
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -117,7 +117,8 @@ export default function Chat() {
 
   // Function to handle interactions with the cat and sent them to the API
   const handleInteraction = async (interactionType: string) => {
-    if (!catData) return;
+    if (!catData || !userData) return;
+    const createdAt = userData.createdAt;
 
     try {
       const data = await createInteraction(interactionType, catData.id!);
@@ -130,13 +131,57 @@ export default function Chat() {
       ]);
 
       // Optional: Trigger a chat response after interaction
-      await handleSend({ preventDefault: () => {} } as FormEvent);
+      try {
+        const res = await fetch("/api/chat/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Auth.getToken()}`,
+          },
+          body: JSON.stringify({
+            userData,
+            catData,
+            // interactions,
+            userInput: autoMessage,
+            createdAt,
+          }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+
+        const data = await res.json();
+        const catMessage: Message = {
+          sender: catData.name,
+          content: data.content,
+        };
+        setMessages((prev) => [...prev, catMessage]);
+        // Temp logging
+        // console.log("Chat response:", data);
+        const {
+          content: catResponse,
+          mood: newMood,
+          patience: newPatience,
+          timestamp,
+        } = data;
+        console.log(
+          "Cat Response:",
+          catResponse,
+          "New Mood:",
+          newMood,
+          "New Patience:",
+          newPatience,
+          "Timestamp:",
+          timestamp
+        );
+      } catch (error) {
+        console.error("Error during chat interaction:", error);
+      }
     } catch (error) {
       console.error("Error handling interaction:", error);
     }
   };
 
-  if (!catData || !user) return <p>Loading...</p>;
+  if (!catData) return <p>Loading...</p>;
 
   if (!userData) return <p>Fetching user data...</p>;
   // const { yarn } = userData;
@@ -159,7 +204,6 @@ export default function Chat() {
         <h1 className="text-3xl font-bold text-color_2 underline underline-offset-4 bg-color_1 text-center rounded-md p-2 shadow-2xl shadow-color_4 mb-4">
           Chat with {catData.name}
         </h1>
-
 
         {/* Chat Messages */}
         <div>
