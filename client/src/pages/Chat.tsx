@@ -160,11 +160,7 @@ export default function Chat() {
           Chat with {catData.name}
         </h1>
 
-
         {/* Chat Messages */}
-        <div>
-          <strong>Yarn available:</strong> {userData?.yarn}
-        </div>
 
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => (
@@ -209,6 +205,9 @@ export default function Chat() {
 
       <div className="w-1/3 p-4 bg-color_1 flex flex-col items-center justify-center gap-10">
         <h2 className="text-xl font-bold text-color_2">Actions</h2>
+        <div>
+          <strong>Yarn available:</strong> {userData?.yarn}
+        </div>
         {["Play", "Feed", "Gift"].map((action) => (
           <button
             key={action}
