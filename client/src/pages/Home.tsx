@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CatData } from "../interfaces/CatData";
-import { retrieveUser, retrieveUserCats } from "../api/userAPI";
-import { useUser } from "../context/UserContext";
+import { retrieveUserCats } from "../api/userAPI"; 
 import Auth from "../utils/auth"; // Import your AuthService
 import { useCatContext } from "../context/CatContext";
 import CatCard from "../components/catCard";
@@ -11,7 +10,6 @@ import { getUserIdFromToken } from "../utils/userToken";
 const Home: React.FC = () => {
   const [adoptableCats, setAdoptableCats] = useState<CatData[]>([]);
   const [userCats, setUserCats] = useState<CatData[]>([]);
-  const { setUser } = useUser();
   const { setSelectedCat } = useCatContext();
   const navigate = useNavigate();
 
@@ -43,11 +41,7 @@ const Home: React.FC = () => {
 
         const adoptable = await adoptableResponse.json();
         setAdoptableCats(adoptable);
-
-        // Fetch user details and set user data
-        const user = await retrieveUser(userId);
-        setUser(user);
-
+               
         // Fetch user's adopted cats and set them
         const ownedCats = await retrieveUserCats();
         setUserCats(ownedCats);
@@ -61,6 +55,7 @@ const Home: React.FC = () => {
 
   // Handle cat adoption
   const handleAdopt = async (cat: CatData) => {
+    console.log(cat);
     try {
       const token = Auth.getToken(); // Ensure token is available
       const userId = getUserIdFromToken();
