@@ -7,7 +7,7 @@ import {
   CreationOptional,
   ForeignKey,
 } from "sequelize";
-import { User } from "./user";
+import { User } from "./user.js";
 
 export class Cat extends Model<
   InferAttributes<Cat>,
@@ -22,7 +22,7 @@ export class Cat extends Model<
   declare mood: number; // this is going to be initialized as unsigned int
   declare deathFlag: number;
   declare isAlive: boolean;
-  declare userId: ForeignKey<User["id"]>;
+  declare userId: ForeignKey<User["id"]> | null;
 }
 
 export function CatFactory(sequelize: Sequelize) {
@@ -63,6 +63,14 @@ export function CatFactory(sequelize: Sequelize) {
       isAlive: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: User,
+          key: "id",
+        },
       },
     },
     {

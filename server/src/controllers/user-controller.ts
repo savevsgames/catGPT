@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { User, Cat } from "../models/index.js";
+// import { Op } from "sequelize";
 
-import cats from "../utils/data.js"; // Import the adoptable cats data (userId = null)
+// import cats from "../utils/data.js"; // Import the adoptable cats data (userId = null)
 
 // GET /users/adoptablecats - Get adoptable cats
 export const getAdoptableCats = async (
@@ -17,12 +18,9 @@ export const getAdoptableCats = async (
 
   try {
     // Fetch all the cats that the user has already adopted
-    const userCats = await Cat.findAll({
-      where: { userId }, // Get cats associated with this user
+    const usersAdoptedCatArray = await Cat.findAll({
+      where: { userId: userId }, // Get cats associated with this user
     });
-
-    // Extract the names of the adopted cats to filter them out => ID is unique name can match
-    const adoptedCatNames = userCats.map((cat) => cat.name);
 
     // Fetch the first 4 adoptable cats by ID
     const adoptableCats = await Cat.findAll({
@@ -32,9 +30,10 @@ export const getAdoptableCats = async (
     });
 
     // Filter out the cats already adopted by this user => by the cat name
-    const availableCats = adoptableCats.filter(
-      (cat) => !adoptedCatNames.includes(cat.name)
-    );
+    const availableCats = adoptableCats;
+    console.log("availableCats", availableCats);
+    console.log("usersAdoptedCatArray", usersAdoptedCatArray);
+
     // Respond with the available cats
     res.status(200).json(availableCats);
   } catch (error: any) {
@@ -46,7 +45,7 @@ export const getAdoptableCats = async (
 // POST /api/cats - Adopt a cat and save it to the database
 export const adoptCat = async (req: Request, res: Response): Promise<void> => {
   const {
-    id,
+    // id,
     name,
     avatar,
     skin,
@@ -58,16 +57,9 @@ export const adoptCat = async (req: Request, res: Response): Promise<void> => {
   } = req.body;
 
   try {
-    // Check if the cat exists in the static cats array by ID
-    const catToAdopt = cats.find((cat) => cat.id === id);
-    if (!catToAdopt) {
-      res.status(404).json({ message: "Cat not found in available list" });
-      return;
-    }
-
     // Create the new cat in the database with the provided data
     const newCat = await Cat.create({
-      id,
+      // id,
       name,
       avatar: avatar || "./assets/other/adoptMe.png", // Use a default avatar if null
       skin,
