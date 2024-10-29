@@ -29,10 +29,10 @@ export default function Chat() {
   const [interactions, setInteractions] = useState<InteractionData[]>([]);
   const [catMoodPics] = useState(() => {
     const catNames = {
-      whiskers: 1,
-      bubbles: 2,
-      shadow: 3,
-      mittens: 4
+      Whiskers: 1,
+      Bubbles: 2,
+      Shadow: 3,
+      Mittens: 4
     }
     const name = selectedCat?.name as keyof typeof catNames | undefined;
     const number = name ? catNames[name] : undefined;
@@ -63,7 +63,6 @@ export default function Chat() {
       return undefined; 
     }
   };
-
 
   const nookPic = selectedNook;
   const userId = getUserIdFromToken();
@@ -248,12 +247,13 @@ export default function Chat() {
           timestamp
         );
         // Darrio - this is where the pics can be updated
-        // setCatData((prev) => ({
-        //   ...prev,
-        //   mood: newMood,
-        //   avatar: getMoodImage(newMood),
-        // })); // Update the cat data with the new mood and patience
-        // // could have a catAvatar, setCatAvatar = useState and inject it from there
+        setCatData((prev) => ({
+          ...prev,
+          mood: newMood,
+          avatar: getMoodImage(newMood), 
+
+        }) as CatData); // Update the cat data with the new mood and patience
+        // could have a catAvatar, setCatAvatar = useState and inject it from there
       } catch (error) {
         console.error("Error during chat interaction:", error);
       }
