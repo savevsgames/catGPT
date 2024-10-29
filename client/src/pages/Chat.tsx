@@ -41,7 +41,7 @@ export default function Chat() {
       `/assets/cats/cat-0${number}/mood-12.png`,
       `/assets/cats/cat-0${number}/mood-34.png`,
       `/assets/cats/cat-0${number}/mood-56.png`,
-      `/assets/cats/cat-0${number}/mood-78.png`,
+      `/assets/cats/cat-0${number}/mood-78.png`, 
       `/assets/cats/cat-0${number}/mood-910.png`,
     ]
     
