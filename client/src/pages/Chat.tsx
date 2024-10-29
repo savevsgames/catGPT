@@ -42,6 +42,7 @@ export default function Chat() {
           userId
         );
         setUserData(fetchedUser);
+        console.log("User has", userData?.yarn, "yarn"); // bebugging
         setCatData(fetchedCat);
         if (fetchedInteractions.length > 0) {
           setInteractions(fetchedInteractions);
@@ -53,7 +54,7 @@ export default function Chat() {
     };
 
     fetchData();
-  }, [userId, selectedCat]);
+  }, [userId, selectedCat, interaction]);
 
   // Function to handle sending a message to the OPENAI API - when a user sends a message
   const handleSend = async (event: FormEvent) => {
@@ -123,8 +124,13 @@ export default function Chat() {
     try {
       const data = await createInteraction(interactionType, catData.id!);
       setInteraction(data);
+
       console.log("Interaction:", interaction);
-      const autoMessage = `You just ${interactionType} with ${catData.name}.`;
+
+      const updatedUserData = await retrieveUser(userId);
+      setUserData(updatedUserData);
+      console.log("updated user yarn:", updatedUserData.yarn);
+      const autoMessage = `You just ${interactionType}ed with ${catData.name}.`;
       setMessages((prev) => [
         ...prev,
         { sender: "INFO", content: autoMessage },
