@@ -350,3 +350,12 @@ export const updateUserBio = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// to do : start with 4 cats with random skin/ that has null as the userID
+// get adoptable cats call is going to retrieve all cats that have userId of null
+// limit to 4 cats only 
+// those cats are sent to the FE for rendering
+
+// useEffect
+// adopt button has to have a call where the userId gets attached to the catId
+// handleAdopt function

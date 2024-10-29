@@ -32,7 +32,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     const token = jwt.sign(
       { username: user.username, id: user.id },
       secretKey,
-      { expiresIn: "2h" }
+      { expiresIn: "1h" }
     );
 
     return res.json({ token });
@@ -70,7 +70,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       return res.status(500).json({ message: "JWT Secret key not configured" });
     }
 
-    const token = jwt.sign({ username }, secretKey, { expiresIn: "2h" });
+    const token = jwt.sign({ username }, secretKey, { expiresIn: "1h" });
 
     return res.status(201).json({
       message: "Account has been created successfully",
