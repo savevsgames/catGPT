@@ -16,7 +16,7 @@ export const NookContext = createContext<NookContextType | undefined>(
   undefined
 );
 
-export const NookProvider = ({ children }: { children: ReactNode }) => {
+export const NookProvider = ({ children }: { children?: ReactNode }) => {
   const [selectedNook, setSelectedNook] = useState<string | null>(null);
 
   return (

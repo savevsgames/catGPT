@@ -1,11 +1,13 @@
-import {TheCatAPI} from "@thatapicompany/thecatapi";
-import {Image} from "@thatapicompany/thecatapi/dist/types";
+import { TheCatAPI } from "@thatapicompany/thecatapi";
+import { Image } from "@thatapicompany/thecatapi/dist/types";
 
-if (!import.meta.env.VITE_CAT_API_KEY) {
-  throw new Error("Missing CAT_API_KEY environment var. Check your .env file!!!!");
+if (!import.meta?.env?.VITE_CAT_API_KEY) {
+  throw new Error(
+    "Missing CAT_API_KEY environment var. Check your .env file!!!!"
+  );
 }
 
-const catApi = new TheCatAPI(import.meta.env.VITE_CAT_API_KEY || "");
+const catApi = new TheCatAPI(import.meta?.env?.VITE_CAT_API_KEY || "");
 
 /**
  *
@@ -27,11 +29,14 @@ const catApi = new TheCatAPI(import.meta.env.VITE_CAT_API_KEY || "");
  *
  * categories - The categories the image is in _(Nullable!)_
  */
-async function fetchCatPictures(quantity: number = 1, size: "small" | "med" | "full" = "full" ): Promise<Image[]> {
+async function fetchCatPictures(
+  quantity: number = 1,
+  size: "small" | "med" | "full" = "full"
+): Promise<Image[]> {
   return await catApi.images.searchImages({
     limit: quantity,
     mimeTypes: ["png"],
-    size: size
+    size: size,
   });
 }
 

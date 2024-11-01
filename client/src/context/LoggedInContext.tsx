@@ -16,7 +16,7 @@ export const LoggedInContext = createContext<LoggedInContextType | undefined>(
   undefined
 );
 
-export const LoggedInProvider = ({ children }: { children: ReactNode }) => {
+export const LoggedInProvider = ({ children }: { children?: ReactNode }) => {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
   return (

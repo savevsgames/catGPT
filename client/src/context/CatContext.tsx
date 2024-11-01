@@ -15,7 +15,7 @@ interface CatContextType {
 
 export const CatContext = createContext<CatContextType | undefined>(undefined);
 
-export const CatProvider = ({ children }: { children: ReactNode }) => {
+export const CatProvider = ({ children }: { children?: ReactNode }) => {
   const [selectedCat, setSelectedCat] = useState<CatData | null>(null);
 
   return (
