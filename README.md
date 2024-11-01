@@ -8,7 +8,7 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-00979D?style=for-the-badge&logo=render&logoColor=white)
 
-🌐 **[Live Demo](https://tomogatch-ai.onrender.com/)**
+🌐 **[Live Demo]([https://catgpt-5swb.onrender.com/](https://catgpt-5swb.onrender.com/))**
 
 ---
 
