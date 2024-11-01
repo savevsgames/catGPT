@@ -41,15 +41,15 @@ function App() {
     <UserProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route key="LandingPage" index element={<Landing />} />
-          <Route key="SignUp" path="/signup" element={<Signup />} />
-          <Route key="Login" path="/login" element={<Login />} />
-          <Route key="Chat" path="/Chat" element={<Chat />} />
-          <Route key="Home" path="/home" element={<Home />} />{" "}
+          <Route index element={<Landing />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/Chat" element={<Chat />} />
+          <Route path="/home" element={<Home />} />{" "}
           {/* Page that shows all your cats */}
-          <Route key="Profile" path="/profile" element={<Profile />} />
-          <Route key="Cat" path="/:catName" element={<Cat />} />
-          <Route key="Error" path="*" element={<Error />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/:catName" element={<Cat />} />
+          <Route path="*" element={<Error />} />
         </Route>
       </Routes>
     </UserProvider>
