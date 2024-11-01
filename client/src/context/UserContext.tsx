@@ -3,7 +3,7 @@ import React, {
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  type ReactNode,
 } from "react";
 import AuthService from "../utils/auth"; // Your existing auth service
 import { getUserIdFromToken } from "../utils/userToken"; // Utility function
