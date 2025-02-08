@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS catgpt_db;
+
+CREATE DATABASE catgpt_db;
