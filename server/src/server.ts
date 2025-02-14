@@ -18,13 +18,37 @@ const buildPath = path.join(__dirname, "../..", "client", "dist");
 app.use(express.static(buildPath));
 
 // Allow cross-origin requests from Vite (development mode)
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Adjusted for Vite dev server
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+const allowedOrigins = [
+  "http://localhost:5173", // Development origin - vite dev server
+  "https://catgpt-1-il6e.onrender.com", // Production origin
+  "https://catgpt-1.onrender.com", // Paid Production origin
+];
+
+interface CorsOptions {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => void;
+  methods: string[];
+  allowedHeaders: string[];
+}
+const corsOptions: CorsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    if (allowedOrigins.indexOf(origin || "") !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
+
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173", // Adjusted for Vite dev server
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
