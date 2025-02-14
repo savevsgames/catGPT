@@ -47,16 +47,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
     // extract username, password, and other required fields from req.body
     console.log("Extracting user data from request body...");
     const { username, email, password, bio } = req.body;
-    console.log(
-      "username: ",
-      username,
-      "email: ",
-      email,
-      "password: ",
-      password,
-      "bio: ",
-      bio
-    ); // troubleshooting db connection issue on sign-up
+  
     // check if a user with the given email already exists in the database
     console.log("Checking if user already exists...");
     const existingUser = await User.findOne({ where: { email } });
@@ -68,7 +59,6 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
     }
 
     // create a new user record in the database
-    console.log("No existing user found. Creating new user...");
     const newUser = await User.create({
       username,
       email,
@@ -99,7 +89,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       token,
     });
   } catch (error) {
-    console.log(error); // log the error to the server console
+    
     return res.status(500).json("Error creating new user");
   }
 };
