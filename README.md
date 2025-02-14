@@ -51,7 +51,7 @@ Follow these steps to get the application running on your local machine:
 1. **Clone the Repository**
 
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/savevsgames/catGPT.git
    cd Tomogatch.ai
    ```
 
@@ -87,14 +87,25 @@ Follow these steps to get the application running on your local machine:
    ```
    VITE_CAT_API_KEY=
    ```
+3. **Build the Application**
 
-4. **Run the Application**
-
-   ```bash
-   npm run start
+      ```bash
+   npm run client:build
    ```
 
-5. **Access the App**  
+4. **Test Seed the BD (Optional)**
+
+         ```bash
+   cd server && npm run seed
+   ```
+
+5. **Run the Application**
+
+   ```bash
+   npm run server
+   ```
+
+6. **Access the App**  
    Open your browser and navigate to `http://localhost:3001`.
 
 ---
