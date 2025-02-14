@@ -10,7 +10,7 @@ const sequelize = process.env.DB_URL
       dialectOptions: {
         ssl: {
           require: true,
-          // rejectUnauthorized: false, // Use with caution
+          rejectUnauthorized: false, // Use with caution
         },
       },
     })
@@ -24,7 +24,7 @@ const sequelize = process.env.DB_URL
         dialectOptions: {
           ssl: {
             require: true,
-            // rejectUnauthorized: false, // Use with caution
+            rejectUnauthorized: false, // Use with caution
           },
         },
       }
