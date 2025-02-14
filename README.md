@@ -142,6 +142,8 @@ This project is a collaborative effort by the following contributors:
       </a>
       <br />
       <a href="mailto:dariojab87@gmail.com">dariojzb87@gmail.com</a>
+       <br />
+       LinkedIn: <a href=""> Connect with Me</a>
     </td>
     <td align="center">
       <a href="https://github.com/souad-hb">
@@ -150,7 +152,8 @@ This project is a collaborative effort by the following contributors:
         <sub><b>Souad</b></sub>
       </a>
       <br />
-      <a href="mailto:souadsalahh@gmail.com">souadsalahh@gmail.com</a>
+      <a href="mailto:souadsalahh@gmail.com">souadsalahh@gmail.com</a><br />
+       LinkedIn: <a href=""> Connect with Me</a>
     </td>
     <td align="center">
       <a href="https://github.com/OccultParrot">
@@ -160,6 +163,8 @@ This project is a collaborative effort by the following contributors:
       </a>
       <br />
       <a href="mailto:stemlertho@gmail.com">stemlertho@gmail.com</a>
+       <br />
+       LinkedIn: <a href=""> Connect with Me</a>
     </td>
     <td align="center">
       <a href="https://github.com/savevsgames">
@@ -169,6 +174,8 @@ This project is a collaborative effort by the following contributors:
       </a>
       <br />
       <a href="mailto:gregcbarker@gmail.com">gregcbarker@gmail.com</a>
+      <br />
+       LinkedIn: <a href="https://www.linkedin.com/in/greg-barker-savevsgames/"> Connect with Me</a>
     </td>
   </tr>
 </table>
