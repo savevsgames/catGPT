@@ -42,13 +42,6 @@ const corsOptions: CorsOptions = {
 };
 app.use(cors(corsOptions));
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173", // Adjusted for Vite dev server
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
