@@ -8,7 +8,7 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-00979D?style=for-the-badge&logo=render&logoColor=white)
 
-🌐 **[Live Demo](https://tomogatch-ai.onrender.com/)**
+🌐 **[Live Demo](https://catgpt-1.onrender.com/)**
 
 ---
 
@@ -62,11 +62,30 @@ Follow these steps to get the application running on your local machine:
    ```
 
 3. **Set up Environment Variables**  
-   Create a `.env` file in the root directory and add the necessary environment variables:
+   1. Create a server `.env` file in the root directory and add the necessary environment variables:
 
    ```
-   OPENAI_API_KEY=<your-openai-api-key>
-   DATABASE_URL=<your-database-url>
+    OPENAI_API_KEY=
+    DATABASE_URL=
+    DB_NAME=
+    DB_USER=
+    DB_PASSWORD=
+    PORT=
+    OPENAI_API_KEY=
+    LANGCHAIN_TRACING_V2=
+    LANGCHAIN_ENDPOINT=
+    LANGCHAIN_API_KEY=
+    LANGCHAIN_PROJECT=
+    TAVILY_API_KEY=
+    UPSTASH_REDIS_URL=
+    UPSTASH_REST_TOKEN=
+    JWT_SECRET_KEY=
+   ```
+
+   2. Create a client `.env` for Cat Photos API
+
+   ```
+   VITE_CAT_API_KEY=
    ```
 
 4. **Run the Application**
@@ -112,7 +131,6 @@ Tomogatch.ai/
 ## **Contributors**
 
 This project is a collaborative effort by the following contributors:
-
 
 <table>
   <tr>
