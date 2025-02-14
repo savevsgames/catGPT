@@ -87,25 +87,26 @@ Follow these steps to get the application running on your local machine:
    ```
    VITE_CAT_API_KEY=
    ```
-3. **Build the Application**
+   
+4. **Build the Application**
 
-      ```bash
+   ```
    npm run client:build
    ```
 
-4. **Test Seed the BD (Optional)**
+5. **Test Seed the BD (Optional)**
 
-         ```bash
+   ```
    cd server && npm run seed
    ```
 
-5. **Run the Application**
+6. **Run the Application**
 
-   ```bash
+   ```
    npm run server
    ```
 
-6. **Access the App**  
+7. **Access the App**  
    Open your browser and navigate to `http://localhost:3001`.
 
 ---
