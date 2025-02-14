@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "local:build": "tsc -b && vite build",
-    "build": "tsc && vite build",
+    "build": "NODE_ENV=development tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
