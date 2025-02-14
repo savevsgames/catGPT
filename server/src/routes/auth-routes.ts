@@ -2,7 +2,6 @@ import { Router, Request, Response } from "express";
 import { User } from "../models/user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { userInfo } from "os";
 
 // login function
 export const login = async (req: Request, res: Response): Promise<any> => {
